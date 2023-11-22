@@ -1,8 +1,22 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.Filmer" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+        <item name="colorPrimaryDark">#CCB6E1</item>
+        <item name="colorPrimary">#170260</item>
+        <item name="colorAccent">#DAF676</item>
+        <item name="colorOnBackground">#DFF6EF</item>
+    </style>
+
+    <style name="AppBar">
+        <item name="android:background">#C7D5C9</item>
+        <item name="android:textColor">#03040E</item>
+        <item name="android:iconTint">#03040E</item>
+
+    </style>
+
+    <style name="viewsBackground">
+        <item name="android:background">#C7D5C9</item>
     </style>
 
     <style name="Theme.Filmer" parent="Base.Theme.Filmer" />

@@ -2,7 +2,10 @@ package com.example.filmer
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.view.menu.MenuView
 import com.example.filmer.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -13,21 +16,40 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.butt1.setOnClickListener {
-            Toast.makeText(this,R.string.button_1_text,Toast.LENGTH_SHORT).show()
-        }
-        binding.butt2.setOnClickListener {
-            Toast.makeText(this,R.string.button_2_text,Toast.LENGTH_SHORT).show()
-        }
-        binding.butt3.setOnClickListener {
-            Toast.makeText(this,R.string.button_3_text,Toast.LENGTH_SHORT).show()
-        }
-        binding.butt4.setOnClickListener {
-            Toast.makeText(this,R.string.button_4_text,Toast.LENGTH_SHORT).show()
-        }
-        binding.butt5.setOnClickListener {
-            Toast.makeText(this,R.string.button_5_text,Toast.LENGTH_SHORT).show()
-        }
+        binding.bottomNavigation.setOnItemSelectedListener {
+            when (it.itemId) {
+                R.id.favorites -> {
+                    Toast.makeText(this, "favorites", Toast.LENGTH_SHORT).show()
+                }
 
+                R.id.selections -> {
+                    Toast.makeText(this, "selections", Toast.LENGTH_SHORT).show()
+                }
+
+                R.id.watch_later -> {
+                    Toast.makeText(this, "watch later", Toast.LENGTH_SHORT).show()
+                }
+            }
+            true
+        }
+        binding.topAppBar.apply {
+            setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.settings -> {
+                        Toast.makeText(this@MainActivity, "settings", Toast.LENGTH_SHORT).show()
+                    }
+
+                    R.id.colorMode -> {
+                        if (AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES) {
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                        } else AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                    }
+                }
+                true
+            }
+            setNavigationOnClickListener {
+                Toast.makeText(this@MainActivity, "menu", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 }

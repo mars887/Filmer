@@ -4,8 +4,35 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    style="@style/viewsBackground"
     tools:context=".MainActivity">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            style="@style/AppBar"
+            android:id="@+id/topAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:menu="@menu/top_bar_menu"
+            app:navigationIcon="@drawable/top_menu_button"
+            app:title="Filmer" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        style="@style/AppBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menu="@menu/bottom_bar_menu" />
 
     <FrameLayout
         android:id="@+id/upContainer"
@@ -13,14 +40,15 @@
         android:layout_height="160dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/appBarLayout">
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/top_video_bar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="5dp"
             android:elevation="5dp"
-            app:cardCornerRadius="20dp">
+            app:cardCornerRadius="20dp" >
 
             <HorizontalScrollView
                 android:layout_width="match_parent"
@@ -77,84 +105,5 @@
         android:text="@string/sourse_https_www_movieposters_com"
         app:layout_constraintTop_toBottomOf="@id/upContainer" />
 
-
-    <androidx.cardview.widget.CardView
-        android:layout_width="260dp"
-        android:layout_height="310dp"
-        app:cardCornerRadius="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/bottomContainer"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/upContainer">
-
-        <LinearLayout
-            android:id="@+id/middleContainer"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/buttons_holder_background"
-            android:orientation="vertical"
-            android:paddingHorizontal="10dp"
-            android:paddingVertical="5dp">
-
-
-            <android.widget.Button
-                android:id="@+id/butt1"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginVertical="5dp"
-                android:background="@drawable/buttons_background_with_ripple"
-                android:text="@string/button_1_text"
-                android:textColor="@color/white" />
-
-            <android.widget.Button
-                android:id="@+id/butt2"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginVertical="5dp"
-                android:background="@drawable/buttons_background_with_ripple"
-                android:text="@string/button_2_text"
-                android:textColor="@color/white" />
-
-            <android.widget.Button
-                android:id="@+id/butt3"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginVertical="5dp"
-                android:background="@drawable/buttons_background_with_ripple"
-                android:text="@string/button_3_text"
-                android:textColor="@color/white" />
-
-            <android.widget.Button
-                android:id="@+id/butt4"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginVertical="5dp"
-                android:background="@drawable/buttons_background_with_ripple"
-                android:text="@string/button_4_text"
-                android:textColor="@color/white" />
-
-            <android.widget.Button
-                android:id="@+id/butt5"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginVertical="5dp"
-                android:background="@drawable/buttons_background_with_ripple"
-                android:text="@string/button_5_text"
-                android:textColor="@color/white" />
-
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-
-    <FrameLayout
-        android:id="@+id/bottomContainer"
-        android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:background="#FAF6E6"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

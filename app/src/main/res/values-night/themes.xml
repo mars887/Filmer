@@ -1,0 +1,23 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Filmer" parent="Theme.Material3.DayNight.NoActionBar">
+
+        <item name="colorPrimaryDark">#140025</item>
+        <item name="colorPrimary">#6A49DA</item>
+        <item name="colorAccent">#090E09</item>
+        <item name="colorOnBackground">#03251B</item>
+    </style>
+
+    <style name="AppBar">
+        <item name="android:background">#040904</item>
+        <item name="android:textColor">#CFF1C9</item>
+        <item name="android:iconTint">#E2E4F8</item>
+
+    </style>
+
+    <style name="viewsBackground">
+        <item name="android:background">#040904</item>
+    </style>
+
+    <style name="Theme.Filmer" parent="Base.Theme.Filmer" />
+</resources>

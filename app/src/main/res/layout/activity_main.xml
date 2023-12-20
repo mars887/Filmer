@@ -2,9 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/viewsBackground"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    style="@style/viewsBackground"
     tools:context=".MainActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -14,8 +14,8 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.appbar.MaterialToolbar
-            style="@style/AppBar"
             android:id="@+id/topAppBar"
+            style="@style/AppBar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:menu="@menu/top_bar_menu"
@@ -35,75 +35,10 @@
         app:menu="@menu/bottom_bar_menu" />
 
     <FrameLayout
-        android:id="@+id/upContainer"
+        android:id="@+id/main_container"
         android:layout_width="match_parent"
-        android:layout_height="160dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appBarLayout">
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/top_video_bar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="5dp"
-            android:elevation="5dp"
-            app:cardCornerRadius="20dp" >
-
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="120dp"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/poster1" />
-
-                    <ImageView
-                        android:layout_width="120dp"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/poster2" />
-
-                    <ImageView
-                        android:layout_width="120dp"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/poster3" />
-
-                    <ImageView
-                        android:layout_width="120dp"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/poster4" />
-
-                    <ImageView
-                        android:layout_width="120dp"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/poster5" />
-
-                </LinearLayout>
-            </HorizontalScrollView>
-
-        </androidx.cardview.widget.CardView>
-
-    </FrameLayout>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:autoLink="web"
-        android:gravity="center"
-        android:linksClickable="true"
-        android:text="@string/sourse_https_www_movieposters_com"
-        app:layout_constraintTop_toBottomOf="@id/upContainer" />
-
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+        app:layout_constraintTop_toBottomOf="@id/appBarLayout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

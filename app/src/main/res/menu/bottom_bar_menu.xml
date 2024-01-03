@@ -2,17 +2,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/favorites"
+        android:id="@+id/bottomMenu_main"
+        android:icon="@drawable/baseline_personal_video_24"
+        android:title="Videos"
+        app:showAsAction="withText" />
+    <item
+        android:id="@+id/bottomMenu_favorites"
         android:icon="@drawable/bottom_bar_favorite_icon"
         android:title="Favorites"
         app:showAsAction="withText"/>
     <item
-        android:id="@+id/watch_later"
+        android:id="@+id/bottomMenu_watch_later"
         android:icon="@drawable/bottom_bar_watchlater_icon"
         android:title="Watch later"
         app:showAsAction="withText"/>
     <item
-        android:id="@+id/selections"
+        android:id="@+id/bottomMenu_selections"
         android:icon="@drawable/bottom_bar_library_icon"
         android:title="Library"
         app:showAsAction="withText"/>

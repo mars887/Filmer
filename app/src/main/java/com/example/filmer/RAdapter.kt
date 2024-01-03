@@ -2,10 +2,11 @@ package com.example.filmer
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.example.filmer.databinding.RvItemBinding
 
-class RAdapter(private val clickListenerner: OnItemClickListener) :
+class RAdapter(private val clickListenerner: OnItemClickListener,private val showIsFavorite: Boolean = true) :
     RecyclerView.Adapter<RAdapter.RViewHolder>() {
 
     var data: ArrayList<RData> = ArrayList()
@@ -25,11 +26,13 @@ class RAdapter(private val clickListenerner: OnItemClickListener) :
             posterImage.setImageResource(data1.posterId)
             title.text = data1.title
             description.text = data1.description
-            isFavorite.setImageResource(if (data1.isFavorite) R.drawable.baseline_favorite_24 else R.drawable.bottom_bar_favorite_icon)
-            isFavorite.setOnClickListener {
-                data1.isFavorite = !data1.isFavorite
+            if(showIsFavorite) {
                 isFavorite.setImageResource(if (data1.isFavorite) R.drawable.baseline_favorite_24 else R.drawable.bottom_bar_favorite_icon)
-            }
+                isFavorite.setOnClickListener {
+                    data1.isFavorite = !data1.isFavorite
+                    isFavorite.setImageResource(if (data1.isFavorite) R.drawable.baseline_favorite_24 else R.drawable.bottom_bar_favorite_icon)
+                }
+            } else isFavorite.isVisible = false
         }
         holder.itemView.setOnClickListener {
             clickListenerner.click(data[position])

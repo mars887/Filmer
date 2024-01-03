@@ -54,8 +54,18 @@
         android:backgroundTint="@color/white"
         android:tint="@android:color/white"
         app:layout_anchor="@id/toolbar_layout"
+        app:layout_anchorGravity="bottom|right" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/share_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:backgroundTint="@color/white"
+        android:tint="@android:color/white"
+        app:layout_anchor="@id/toolbar_layout"
         app:layout_anchorGravity="bottom|right"
-        app:srcCompat="@drawable/return_icon" />
+        app:srcCompat="@drawable/baseline_share_24" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"

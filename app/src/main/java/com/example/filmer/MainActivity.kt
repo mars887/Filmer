@@ -1,11 +1,13 @@
 package com.example.filmer
 
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.SearchView
 import com.example.filmer.databinding.ActivityMainBinding
 import java.util.stream.Collectors
 import java.util.stream.Stream
@@ -14,36 +16,83 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var filmList: ArrayList<RData>
 
+    private var currentFragment: Int = VIDEOS_FRAGMENT
+    private var isDetailsOpen: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        filmList = getRandomList(10) as ArrayList<RData>
-
-        if (supportFragmentManager.fragments.size < 1) {
+        if (supportFragmentManager.fragments.size == 0) {
             supportFragmentManager
                 .beginTransaction()
                 .add(R.id.main_container, HomeFragment())
-                .addToBackStack("home_fragment")
                 .commit()
+            currentFragment = VIDEOS_FRAGMENT
         }
+
+        filmList = getRandomList(10) as ArrayList<RData>
+
+        binding.searchView.setOnClickListener {
+            binding.searchView.isIconified = false
+        }
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (currentFragment == VIDEOS_FRAGMENT || currentFragment == FAVORITES_FRAGMENT) {
+                    (supportFragmentManager.fragments.last() as HasSearch).onQueryTextSubmit(query)
+                }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (currentFragment == VIDEOS_FRAGMENT || currentFragment == FAVORITES_FRAGMENT) {
+                    (supportFragmentManager.fragments.last() as HasSearch).onQueryTextChange(newText)
+                }
+                return false
+            }
+
+        })
 
         binding.bottomNavigation.setOnItemSelectedListener {
             when (it.itemId) {
-                R.id.favorites -> {
-                    Toast.makeText(this, "favorites", Toast.LENGTH_SHORT).show()
+                R.id.bottomMenu_main -> {
+                    if (currentFragment != VIDEOS_FRAGMENT || supportFragmentManager.backStackEntryCount == 0) {
+                        supportFragmentManager.popBackStack()
+                        currentFragment = VIDEOS_FRAGMENT
+                        binding.searchView.visibility = View.VISIBLE
+                        true
+                    } else false
                 }
 
-                R.id.selections -> {
+                R.id.bottomMenu_favorites -> {
+                    if (currentFragment != FAVORITES_FRAGMENT) {
+                        supportFragmentManager
+                            .beginTransaction()
+                            .replace(R.id.main_container, FavoritesFragment())
+                            .addToBackStack("favorites")
+                            .commit()
+                        currentFragment = FAVORITES_FRAGMENT
+                        binding.searchView.visibility = View.VISIBLE
+                        true
+                    } else false
+                }
+
+                R.id.bottomMenu_selections -> {
                     Toast.makeText(this, "selections", Toast.LENGTH_SHORT).show()
+                    false
                 }
 
-                R.id.watch_later -> {
+                R.id.bottomMenu_watch_later -> {
                     Toast.makeText(this, "watch later", Toast.LENGTH_SHORT).show()
+                    false
+                }
+
+                else -> {
+                    false
                 }
             }
-            true
         }
         binding.topAppBar.apply {
             setOnMenuItemClickListener {
@@ -69,19 +118,30 @@ class MainActivity : AppCompatActivity() {
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (supportFragmentManager.backStackEntryCount > 1) {
-                    supportFragmentManager.popBackStack()
-                } else {
-                    AlertDialog.Builder(this@MainActivity)
-                        .setTitle("Вы хотите выйти?")
-                        .setPositiveButton("Да") { _, _ ->
-                            finish()
-                        }
-                        .setNegativeButton("Нет") { _, _ -> }
-                        .show()
+                when {
+                    isDetailsOpen -> {
+                        isDetailsOpen = false
+                        supportFragmentManager.popBackStack()
+                    }
+
+                    currentFragment != VIDEOS_FRAGMENT -> {
+                        supportFragmentManager.popBackStack()
+                        binding.bottomNavigation.setSelectedItemId(R.id.bottomMenu_main)
+                        currentFragment = VIDEOS_FRAGMENT
+                    }
+
+                    else -> {
+                        AlertDialog.Builder(this@MainActivity)
+                            .setTitle("Вы хотите выйти?")
+                            .setPositiveButton("Да") { _, _ ->
+                                finish()
+                            }
+                            .setNegativeButton("Нет") { _, _ -> }
+                            .show()
+                    }
+
                 }
             }
-
         })
     }
 
@@ -94,13 +154,22 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.main_container, fragment)
-            .addToBackStack(null)
+            .addToBackStack("details")
             .commit()
+        isDetailsOpen = true
     }
 
     fun getData(): ArrayList<RData> = filmList
 
     companion object {
+        const val VIDEOS_FRAGMENT = 0
+        const val FAVORITES_FRAGMENT = 1
+        const val WATCH_LATER_FRAGMENT = 2
+        const val LIBRARY_FRAGMENT = 3
+
+        val posterTitles = listOf<String>("cheto film","drygoe kino","pochti kak kino","vrode eto kino",
+            "kak kino no da","tipo nazvanie","tozhe cheto")
+
         public fun getRandomPosterId(): Int {
             return when ((1..5).random()) {
                 1 -> R.drawable.poster1
@@ -115,7 +184,7 @@ class MainActivity : AppCompatActivity() {
         public fun getRandomRData(): RData {
             return RData(
                 getRandomPosterId(),
-                "poster title",
+                posterTitles.random(),
                 "poster description\n To connect to your server, copy the server address and enter it in your Minecraft client, as a new server or with \"Direct Connect\". You can find the server address on the server page."
             )
         }

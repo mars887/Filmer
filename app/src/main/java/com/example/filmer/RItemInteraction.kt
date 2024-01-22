@@ -13,7 +13,7 @@ class RItemInteraction(val adapter: RAdapter) : ItemTouchHelper.Callback() {
         recyclerView: RecyclerView,
         viewHolder: RecyclerView.ViewHolder
     ): Int {
-        val swipeFlags = ItemTouchHelper.START or ItemTouchHelper.END
+        val swipeFlags = ItemTouchHelper.END
         return makeMovementFlags(0, swipeFlags)
     }
 
@@ -26,14 +26,8 @@ class RItemInteraction(val adapter: RAdapter) : ItemTouchHelper.Callback() {
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        if (direction == ItemTouchHelper.START) {
-            adapter.data.removeAt(viewHolder.adapterPosition)
-            adapter.data.add(MainActivity.getRandomRData())
-            adapter.notifyItemRemoved(viewHolder.adapterPosition)
-            adapter.notifyItemInserted(adapter.data.size - 1)
-        } else {
-            adapter.data[viewHolder.adapterPosition].isFavorite = !adapter.data[viewHolder.adapterPosition].isFavorite
-            adapter.notifyItemChanged(viewHolder.adapterPosition)
-        }
+        adapter.data[viewHolder.adapterPosition].isFavorite =
+            !adapter.data[viewHolder.adapterPosition].isFavorite
+        adapter.notifyItemChanged(viewHolder.adapterPosition)
     }
 }

@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import com.example.filmer.databinding.FragmentFilmDetailsBinding
 
 class FilmDetailsFragment : Fragment() {
@@ -26,7 +27,12 @@ class FilmDetailsFragment : Fragment() {
         val film = arguments?.get("film") as RData
 
         binding.apply {
-            detailsPoster.setImageResource(film.posterId)
+
+            Glide.with(root)
+                .load(film.posterId)
+                .centerCrop()
+                .into(detailsPoster)
+
             detailsDescription.text = film.description
             detailsToolbar.title = film.title
 

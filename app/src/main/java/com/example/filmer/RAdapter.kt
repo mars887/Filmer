@@ -39,6 +39,8 @@ class RAdapter(private val clickListenerner: OnItemClickListener,private val sho
                     isFavorite.setImageResource(if (data1.isFavorite) R.drawable.baseline_favorite_24 else R.drawable.bottom_bar_favorite_icon)
                 }
             } else isFavorite.isVisible = false
+
+            ratingView.setProgress(data1.rating)
         }
         holder.itemView.setOnClickListener {
             clickListenerner.click(data1)

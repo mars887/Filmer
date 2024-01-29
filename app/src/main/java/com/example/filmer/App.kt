@@ -23,7 +23,9 @@ class App : Application() {
         return RData(
             getRandomPosterId(),
             posterTitles.random(),
-            "poster description\n To connect to your server, copy the server address and enter it in your Minecraft client, as a new server or with \"Direct Connect\". You can find the server address on the server page."
+            "poster description\n To connect to your server, copy the server address and enter it in your Minecraft client, as a new server or with \"Direct Connect\". You can find the server address on the server page.",
+            false,
+            (10..95).random()
         )
     }
 

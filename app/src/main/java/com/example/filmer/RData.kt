@@ -10,6 +10,9 @@ data class RData(
     val description: String,
     var isFavorite: Boolean = false
 ) : Parcelable {
+
+    val id = ids.id++
+
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readString()!!,
@@ -36,5 +39,16 @@ data class RData(
         override fun newArray(size: Int): Array<RData?> {
             return arrayOfNulls(size)
         }
+    }
+    private object ids{
+        var id = 0
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return (other is RData && other.id == this.id)
+    }
+
+    override fun toString(): String {
+        return "id - $id"
     }
 }

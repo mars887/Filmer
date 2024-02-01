@@ -8,7 +8,8 @@ data class RData(
     val posterId: Int,
     val title: String,
     val description: String,
-    var isFavorite: Boolean = false
+    var isFavorite: Boolean = false,
+    var rating: Int
 ) : Parcelable {
 
     val id = ids.id++
@@ -17,7 +18,8 @@ data class RData(
         parcel.readInt(),
         parcel.readString()!!,
         parcel.readString()!!,
-        parcel.readInt() == 1
+        parcel.readInt() == 1,
+        parcel.readInt()
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -25,6 +27,7 @@ data class RData(
         parcel.writeString(title)
         parcel.writeString(description)
         parcel.writeInt(if (isFavorite) 1 else 0)
+        parcel.writeInt(rating)
     }
 
     override fun describeContents(): Int {

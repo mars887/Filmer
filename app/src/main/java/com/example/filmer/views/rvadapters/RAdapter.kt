@@ -1,16 +1,18 @@
-package com.example.filmer
+package com.example.filmer.views.rvadapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.filmer.R
+import com.example.filmer.data.FilmData
 import com.example.filmer.databinding.RvItemBinding
 
-class RAdapter(private val clickListenerner: OnItemClickListener,private val showIsFavorite: Boolean = true) :
+class RAdapter(private val clickListenerner: OnItemClickListener, private val showIsFavorite: Boolean = true) :
     RecyclerView.Adapter<RAdapter.RViewHolder>() {
 
-    var data: ArrayList<RData> = ArrayList()
+    var data: ArrayList<FilmData> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -52,7 +54,7 @@ class RAdapter(private val clickListenerner: OnItemClickListener,private val sho
     }
 
     interface OnItemClickListener {
-        fun click(film: RData)
+        fun click(film: FilmData)
     }
 
     class RViewHolder(val binding: RvItemBinding) : RecyclerView.ViewHolder(binding.root)

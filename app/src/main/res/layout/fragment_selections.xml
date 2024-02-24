@@ -7,7 +7,7 @@
     android:visibility="invisible"
     tools:visibility="visible"
     android:background="@drawable/fragment_selections_back_shape"
-    tools:context=".SelectionsFragment">
+    tools:context=".views.fragments.SelectionsFragment">
 
 
 </FrameLayout>

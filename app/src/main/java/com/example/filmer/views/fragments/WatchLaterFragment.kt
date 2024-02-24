@@ -1,13 +1,12 @@
-package com.example.filmer
+package com.example.filmer.views.fragments
 
 import android.os.Bundle
-import androidx.transition.Slide
-import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.filmer.databinding.FragmentWatchLaterBinding
+import com.example.filmer.util.AnimationHelper
 
 class WatchLaterFragment : Fragment() {
     private lateinit var binding: FragmentWatchLaterBinding

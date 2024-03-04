@@ -1,4 +1,4 @@
-package com.example.filmer
+package com.example.filmer.views.rvadapters
 
 import android.content.res.Resources
 import android.graphics.Rect

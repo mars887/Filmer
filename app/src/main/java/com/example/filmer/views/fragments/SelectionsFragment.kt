@@ -1,4 +1,4 @@
-package com.example.filmer
+package com.example.filmer.views.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.filmer.databinding.FragmentSelectionsBinding
-import com.example.filmer.databinding.FragmentTvBinding
+import com.example.filmer.util.AnimationHelper
 
 
 class SelectionsFragment : Fragment() {
@@ -15,7 +15,7 @@ class SelectionsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentSelectionsBinding.inflate(inflater,container,false)
         return binding.root
     }

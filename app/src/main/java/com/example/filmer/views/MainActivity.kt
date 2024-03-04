@@ -1,11 +1,17 @@
-package com.example.filmer
+package com.example.filmer.views
 
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.example.filmer.R
+import com.example.filmer.views.fragments.SelectionsFragment
+import com.example.filmer.views.fragments.TVFragment
+import com.example.filmer.views.fragments.WatchLaterFragment
+import com.example.filmer.data.FilmData
 import com.example.filmer.databinding.ActivityMainBinding
+import com.example.filmer.views.fragments.FilmDetailsFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -109,7 +115,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun launchDetailsFragment(film: RData) {
+    fun launchDetailsFragment(film: FilmData) {
         val bundle = Bundle()
         bundle.putParcelable("film", film)
         val fragment = FilmDetailsFragment()

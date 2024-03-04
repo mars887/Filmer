@@ -1,26 +1,32 @@
 package com.example.filmer
 
 import android.app.Application
+import com.example.filmer.data.FilmDataBase
+import com.example.filmer.data.FilmData
+import com.example.filmer.domain.Interactor
 import java.util.stream.Collectors
 import java.util.stream.Stream
 
 class App : Application() {
 
+    lateinit var filmDataBase : FilmDataBase
+    lateinit var interactor : Interactor
 
     override fun onCreate() {
         super.onCreate()
         instance = this
 
+        filmDataBase = FilmDataBase(generateMediaList(15))
 
-        libraryData = generateMediaList(10)
+        interactor = Interactor(filmDataBase)
     }
 
-    fun getRandomRData(): RData {
+    private fun getRandomRData(): FilmData {
         val posterTitles = listOf(
             "cheto film", "drygoe kino", "pochti kak kino", "vrode eto kino",
             "kak kino no da", "tipo nazvanie", "tozhe cheto"
         )
-        return RData(
+        return FilmData(
             getRandomPosterId(),
             posterTitles.random(),
             "poster description\n To connect to your server, copy the server address and enter it in your Minecraft client, as a new server or with \"Direct Connect\". You can find the server address on the server page.",
@@ -29,13 +35,13 @@ class App : Application() {
         )
     }
 
-    private fun generateMediaList(count: Int): List<RData> {
+    private fun generateMediaList(count: Int): List<FilmData> {
         return Stream.generate {
             getRandomRData()
         }.limit(count.toLong()).collect(Collectors.toList())
     }
 
-    fun getRandomPosterId(): Int {
+    private fun getRandomPosterId(): Int {
         return when ((1..5).random()) {
             1 -> R.drawable.poster1
             2 -> R.drawable.poster2
@@ -49,6 +55,5 @@ class App : Application() {
     companion object {
         lateinit var instance: App
             private set
-        lateinit var libraryData: List<RData>
     }
 }

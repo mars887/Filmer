@@ -1,10 +1,10 @@
-package com.example.filmer
+package com.example.filmer.data
 
 import android.os.Parcel
 import android.os.Parcelable
 
 
-data class RData(
+data class FilmData(
     val posterId: Int,
     val title: String,
     val description: String,
@@ -34,12 +34,12 @@ data class RData(
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<RData> {
-        override fun createFromParcel(parcel: Parcel): RData {
-            return RData(parcel)
+    companion object CREATOR : Parcelable.Creator<FilmData> {
+        override fun createFromParcel(parcel: Parcel): FilmData {
+            return FilmData(parcel)
         }
 
-        override fun newArray(size: Int): Array<RData?> {
+        override fun newArray(size: Int): Array<FilmData?> {
             return arrayOfNulls(size)
         }
     }
@@ -48,7 +48,7 @@ data class RData(
     }
 
     override fun equals(other: Any?): Boolean {
-        return (other is RData && other.id == this.id)
+        return (other is FilmData && other.id == this.id)
     }
 
     override fun toString(): String {

@@ -8,7 +8,7 @@
     android:visibility="invisible"
     tools:visibility="visible"
     android:background="@drawable/fragment_tv_back_shape"
-    tools:context=".MainActivity">
+    tools:context=".views.MainActivity">
 
     <androidx.appcompat.widget.SearchView
         android:id="@+id/searchView"

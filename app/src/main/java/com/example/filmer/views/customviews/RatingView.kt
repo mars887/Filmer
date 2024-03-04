@@ -1,4 +1,4 @@
-package com.example.filmer
+package com.example.filmer.views.customviews
 
 import android.animation.ValueAnimator
 import android.content.Context
@@ -8,8 +8,10 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Typeface
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.view.animation.OvershootInterpolator
+import com.example.filmer.R
 import kotlin.math.min
 
 class RatingView @JvmOverloads constructor(context: Context, attributeSet: AttributeSet? = null) :
@@ -33,7 +35,7 @@ class RatingView @JvmOverloads constructor(context: Context, attributeSet: Attri
     private lateinit var circlePaint: Paint
 
     private var isAnimated = false
-    private lateinit var progressAnimation: ValueAnimator
+    private var progressAnimation: ValueAnimator
 
     init {
         val a = context.theme.obtainStyledAttributes(attributeSet, R.styleable.RatingView, 0, 0)
@@ -44,7 +46,6 @@ class RatingView @JvmOverloads constructor(context: Context, attributeSet: Attri
             a.recycle()
         }
 
-        scaleSize = min(width, height).toFloat()
         initPaint()
 
         progressAnimation = ValueAnimator.ofInt(0, progress).apply {
@@ -156,5 +157,4 @@ class RatingView @JvmOverloads constructor(context: Context, attributeSet: Attri
         initPaint()
         invalidate()
     }
-
 }

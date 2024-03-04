@@ -58,7 +58,7 @@
             app:layout_constraintStart_toEndOf="@id/imageContainer"
             app:layout_constraintTop_toBottomOf="@id/title" />
 
-        <com.example.filmer.RatingView
+        <com.example.filmer.views.customviews.RatingView
             android:id="@+id/ratingView"
             android:layout_width="40dp"
             android:layout_height="40dp"

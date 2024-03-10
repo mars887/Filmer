@@ -6,6 +6,7 @@ import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.filmer.R
+import com.example.filmer.data.api.FilmApiConstants
 import com.example.filmer.data.FilmData
 import com.example.filmer.databinding.RvItemBinding
 
@@ -27,11 +28,11 @@ class RAdapter(private val clickListenerner: OnItemClickListener, private val sh
         with(holder.binding) {
 
             Glide.with(root)
-                .load(data1.posterId)
+                .load(FilmApiConstants.IMAGES_URL + "w342" + data1.poster)
                 .centerCrop()
                 .into(posterImage)
 
-            val text = data1.title + data1.id
+            val text = data1.title
             title.text = text
             description.text = data1.description
             if(showIsFavorite) {
@@ -42,7 +43,7 @@ class RAdapter(private val clickListenerner: OnItemClickListener, private val sh
                 }
             } else isFavorite.isVisible = false
 
-            ratingView.setProgress(data1.rating)
+            ratingView.setProgress((data1.rating * 10).toInt())
         }
         holder.itemView.setOnClickListener {
             clickListenerner.click(data1)

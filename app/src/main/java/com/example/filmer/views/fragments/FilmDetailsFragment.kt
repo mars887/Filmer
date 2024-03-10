@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.filmer.R
+import com.example.filmer.data.api.FilmApiConstants
 import com.example.filmer.data.FilmData
 import com.example.filmer.databinding.FragmentFilmDetailsBinding
 
@@ -30,7 +31,7 @@ class FilmDetailsFragment : Fragment() {
         binding.apply {
 
             Glide.with(root)
-                .load(film.posterId)
+                .load(FilmApiConstants.IMAGES_URL + "w780" + film.poster)
                 .centerCrop()
                 .into(detailsPoster)
 

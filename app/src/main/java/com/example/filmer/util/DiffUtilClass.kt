@@ -23,7 +23,7 @@ class DiffUtilClass(val oldList: ArrayList<FilmData>, val newList: ArrayList<Fil
         val new = newList[newItemPosition]
         return old.description == new.description &&
                 old.title == new.title &&
-                old.posterId == new.posterId &&
+                old.poster == new.poster &&
                 old.isFavorite == new.isFavorite
     }
 }

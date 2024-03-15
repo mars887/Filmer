@@ -1,6 +1,7 @@
 package com.example.filmer.views.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.filmer.R
 import com.example.filmer.views.rvadapters.RAdapter
 import com.example.filmer.views.rvadapters.RItemDecorator
@@ -58,6 +60,7 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
 
         viewModel.filmListData.observe(viewLifecycleOwner) {
             filmsDataBase = it
+            updateSearch()
         }
 
         filmSearch = FilmSearch()
@@ -75,6 +78,16 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
         adapter = RAdapter(object : RAdapter.OnItemClickListener {
             override fun click(film: FilmData) {
                 (requireActivity() as MainActivity).launchDetailsFragment(film)
+            }
+        })
+
+        recyc.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (onlyFavorites) return
+                if ((adapter.data.size - (binding.RView.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()) < 20) {
+                    viewModel.loadNewFilmList()
+                }
             }
         })
 
@@ -101,7 +114,7 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-                if (filmsDataBase.size < 200) {
+                if (filmsDataBase.size < 1000) {
                     filmSearch.search(filmsDataBase, newText, adapter, onlyFavorites)
                     lastSearch = newText
                 }
@@ -115,6 +128,9 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
 
     private fun updateSearch() {
         filmSearch.search(filmsDataBase, lastSearch, adapter, onlyFavorites)
+        if (adapter.data.size < 30) {
+            viewModel.loadNewFilmList()
+        }
     }
 
     fun countOfFavorites(): Int = adapter.data.count { it.isFavorite }

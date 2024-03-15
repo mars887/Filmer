@@ -1,55 +1,51 @@
 package com.example.filmer
 
 import android.app.Application
+import com.example.filmer.data.api.FilmApi
+import com.example.filmer.data.api.FilmApiConstants
 import com.example.filmer.data.FilmDataBase
-import com.example.filmer.data.FilmData
 import com.example.filmer.domain.Interactor
-import java.util.stream.Collectors
-import java.util.stream.Stream
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 class App : Application() {
 
-    lateinit var filmDataBase : FilmDataBase
-    lateinit var interactor : Interactor
+    lateinit var filmDataBase: FilmDataBase
+    lateinit var interactor: Interactor
 
     override fun onCreate() {
         super.onCreate()
         instance = this
 
-        filmDataBase = FilmDataBase(generateMediaList(15))
+        val okHttpClient = OkHttpClient.Builder()
+            //Настраиваем таймауты для медленного интернета
+            .callTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            //Добавляем логгер
+            .addInterceptor(HttpLoggingInterceptor().apply {
 
-        interactor = Interactor(filmDataBase)
-    }
+                    level = HttpLoggingInterceptor.Level.BASIC
 
-    private fun getRandomRData(): FilmData {
-        val posterTitles = listOf(
-            "cheto film", "drygoe kino", "pochti kak kino", "vrode eto kino",
-            "kak kino no da", "tipo nazvanie", "tozhe cheto"
-        )
-        return FilmData(
-            getRandomPosterId(),
-            posterTitles.random(),
-            "poster description\n To connect to your server, copy the server address and enter it in your Minecraft client, as a new server or with \"Direct Connect\". You can find the server address on the server page.",
-            false,
-            (10..95).random()
-        )
-    }
+            })
+            .build()
 
-    private fun generateMediaList(count: Int): List<FilmData> {
-        return Stream.generate {
-            getRandomRData()
-        }.limit(count.toLong()).collect(Collectors.toList())
-    }
+        val retrofit = Retrofit.Builder()
+            //Указываем базовый URL из констант
+            .baseUrl(FilmApiConstants.BASE_URL)
+            //Добавляем конвертер
+            .addConverterFactory(GsonConverterFactory.create())
+            //Добавляем кастомный клиент
+            .client(okHttpClient)
+            .build()
 
-    private fun getRandomPosterId(): Int {
-        return when ((1..5).random()) {
-            1 -> R.drawable.poster1
-            2 -> R.drawable.poster2
-            3 -> R.drawable.poster3
-            4 -> R.drawable.poster4
-            5 -> R.drawable.poster5
-            else -> R.drawable.poster1
-        }
+        val filmsService = retrofit.create(FilmApi::class.java)
+
+        filmDataBase = FilmDataBase()
+
+        interactor = Interactor(filmDataBase, filmsService)
     }
 
     companion object {

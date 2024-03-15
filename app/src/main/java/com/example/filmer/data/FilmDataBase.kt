@@ -1,6 +1,13 @@
 package com.example.filmer.data
 
-class FilmDataBase(val data : List<FilmData>) : DataBase<FilmData> {
+class FilmDataBase : DataBase<FilmData> {
+    val data = mutableListOf<FilmData>()
+    private var lastLoadedPage = 1
+
+    fun getLastLoadedPage() = lastLoadedPage
+    fun incrementLastLoadedPage() {
+        lastLoadedPage++
+    }
 
     override fun getAll(): List<FilmData> {
         return data
@@ -8,5 +15,13 @@ class FilmDataBase(val data : List<FilmData>) : DataBase<FilmData> {
 
     override fun getByIndex(index: Int): FilmData {
         return data[index]
+    }
+
+    override fun addFilms(films: List<FilmData>) {
+        films.forEach {
+            if (data.all { film -> it.title != film.title }) {
+                data.add(it)
+            }
+        }
     }
 }

@@ -5,29 +5,29 @@ import android.os.Parcelable
 
 
 data class FilmData(
-    val posterId: Int,
+    val poster: String,
     val title: String,
     val description: String,
     var isFavorite: Boolean = false,
-    var rating: Int
+    var rating: Double
 ) : Parcelable {
 
     val id = ids.id++
 
     constructor(parcel: Parcel) : this(
-        parcel.readInt(),
+        parcel.readString()!!,
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readInt() == 1,
-        parcel.readInt()
+        parcel.readDouble()
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(posterId)
+        parcel.writeString(poster)
         parcel.writeString(title)
         parcel.writeString(description)
         parcel.writeInt(if (isFavorite) 1 else 0)
-        parcel.writeInt(rating)
+        parcel.writeDouble(rating)
     }
 
     override fun describeContents(): Int {

@@ -1,5 +1,6 @@
 package com.example.filmer.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.filmer.App
@@ -17,4 +18,21 @@ class TVFragmentViewModel : ViewModel() {
         filmListData.postValue(films)
     }
 
+    fun loadNewFilmList() {
+        interactor.loadNewFilms(object : ApiCallback {
+            override fun onSuccess() {
+                filmListData.postValue(interactor.getFilmDataBase())
+                Log.d("bebe", "loaded")
+            }
+
+            override fun onFailure() {
+                Log.d("bebe", "failure")
+            }
+        })
+    }
+
+    interface ApiCallback {
+        fun onSuccess()
+        fun onFailure()
+    }
 }

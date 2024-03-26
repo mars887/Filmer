@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.filmer.App
 import com.example.filmer.R
 import com.example.filmer.views.rvadapters.RAdapter
 import com.example.filmer.views.rvadapters.RItemDecorator
@@ -22,11 +23,14 @@ import com.example.filmer.databinding.FragmentTvBinding
 import com.example.filmer.util.AnimationHelper
 import com.example.filmer.viewmodel.TVFragmentViewModel
 import com.example.filmer.views.MainActivity
+import dagger.Lazy
+import javax.inject.Inject
 
 class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
     private lateinit var binding: FragmentTvBinding
     private lateinit var adapter: RAdapter
-    private lateinit var filmSearch: FilmSearch
+    @Inject
+    lateinit var filmSearch: Lazy<FilmSearch>
     private var lastSearch: String? = null
 
     private val viewModel by lazy {
@@ -58,12 +62,12 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        App.instance.appComponent.inject(this)
+
         viewModel.filmListData.observe(viewLifecycleOwner) {
             filmsDataBase = it
             updateSearch()
         }
-
-        filmSearch = FilmSearch()
 
         AnimationHelper.performFragmentCircularRevealAnimation(
             binding.tvFragmentRoot,
@@ -108,14 +112,14 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
 
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                filmSearch.search(filmsDataBase, query, adapter, onlyFavorites)
+                filmSearch.get().search(filmsDataBase, query, adapter, onlyFavorites)
                 lastSearch = query
                 return false
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
                 if (filmsDataBase.size < 1000) {
-                    filmSearch.search(filmsDataBase, newText, adapter, onlyFavorites)
+                    filmSearch.get().search(filmsDataBase, newText, adapter, onlyFavorites)
                     lastSearch = newText
                 }
                 return true
@@ -127,7 +131,7 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
     }
 
     private fun updateSearch() {
-        filmSearch.search(filmsDataBase, lastSearch, adapter, onlyFavorites)
+        filmSearch.get().search(filmsDataBase, lastSearch, adapter, onlyFavorites)
         if (adapter.data.size < 30) {
             viewModel.loadNewFilmList()
         }

@@ -11,8 +11,9 @@ import com.example.filmer.viewmodel.TVFragmentViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import javax.inject.Inject
 
-class Interactor(private val dbase: FilmDataBase, private val filmApi: FilmApi) {
+class Interact @Inject constructor(private val dbase: FilmDataBase, private val filmApi: FilmApi) {
     private var lastApiRequest = 0L
     private val RequestTimeout = 200
 
@@ -38,7 +39,7 @@ class Interactor(private val dbase: FilmDataBase, private val filmApi: FilmApi) 
 
                 override fun onFailure(call: Call<ApiQResult>, t: Throwable) {
                     callback.onFailure()
-                    Log.d("bebe",t.toString())
+                    Log.d("bebe", t.toString())
                 }
             })
     }

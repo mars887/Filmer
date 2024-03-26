@@ -1,6 +1,8 @@
 package com.example.filmer.data
 
-class FilmDataBase : DataBase<FilmData> {
+import javax.inject.Inject
+
+class FilmDataBase @Inject constructor() : DataBase<FilmData> {
     val data = mutableListOf<FilmData>()
     private var lastLoadedPage = 1
 

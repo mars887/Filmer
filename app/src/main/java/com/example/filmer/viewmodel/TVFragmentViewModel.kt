@@ -5,15 +5,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.filmer.App
 import com.example.filmer.data.FilmData
-import com.example.filmer.domain.Interactor
+import com.example.filmer.domain.Interact
+import javax.inject.Inject
 
 class TVFragmentViewModel : ViewModel() {
 
     val filmListData = MutableLiveData<List<FilmData>>()
 
-    private var interactor: Interactor = App.instance.interactor
+    @Inject
+    lateinit var interactor: Interact
 
     init {
+        App.instance.appComponent.inject(this)
+
         val films = interactor.getFilmDataBase()
         filmListData.postValue(films)
     }

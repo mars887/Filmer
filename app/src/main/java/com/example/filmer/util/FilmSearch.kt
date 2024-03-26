@@ -2,8 +2,9 @@ package com.example.filmer.util
 
 import com.example.filmer.data.FilmData
 import com.example.filmer.views.rvadapters.RAdapter
+import javax.inject.Inject
 
-class FilmSearch {
+class FilmSearch @Inject constructor() {
 
     fun search(
         filmsDataBase: List<FilmData>,

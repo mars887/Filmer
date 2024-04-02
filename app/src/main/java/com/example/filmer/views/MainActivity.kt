@@ -42,7 +42,7 @@ class MainActivity : AppCompatActivity() {
                     val fragment = checkFragmentExistence(tag)
                     if(fragment != null) {
                         if ((fragment as TVFragment).countOfFavorites() > 0) {
-                            (fragment as TVFragment).onlyFavorites = true
+                            fragment.onlyFavorites = true
                         } else {
                             Toast.makeText(this,"no favorites!",Toast.LENGTH_SHORT).show()
                             return@setOnItemSelectedListener false

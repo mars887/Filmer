@@ -12,6 +12,7 @@ import com.example.filmer.views.fragments.WatchLaterFragment
 import com.example.filmer.data.FilmData
 import com.example.filmer.databinding.ActivityMainBinding
 import com.example.filmer.views.fragments.FilmDetailsFragment
+import com.example.filmer.views.fragments.SettingsFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -29,7 +30,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.bottomMenu_tv -> {
                     val tag = "tv"
                     val fragment = checkFragmentExistence(tag)
-                    if(fragment != null) {
+                    if (fragment != null) {
                         (fragment as TVFragment).onlyFavorites = false
                     }
 
@@ -40,11 +41,11 @@ class MainActivity : AppCompatActivity() {
                 R.id.bottomMenu_favorites -> {
                     val tag = "tv"
                     val fragment = checkFragmentExistence(tag)
-                    if(fragment != null) {
+                    if (fragment != null) {
                         if ((fragment as TVFragment).countOfFavorites() > 0) {
                             fragment.onlyFavorites = true
                         } else {
-                            Toast.makeText(this,"no favorites!",Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, "no favorites!", Toast.LENGTH_SHORT).show()
                             return@setOnItemSelectedListener false
                         }
                     }
@@ -66,6 +67,13 @@ class MainActivity : AppCompatActivity() {
                     val fragment = checkFragmentExistence(tag)
 
                     changeFragment(fragment ?: SelectionsFragment(), tag)
+                    true
+                }
+
+                R.id.bottomMenu_settings -> {
+                    val tag = "settings"
+                    val fragment = checkFragmentExistence(tag)
+                    changeFragment(fragment ?: SettingsFragment(), tag)
                     true
                 }
 
@@ -97,18 +105,22 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigation.selectedItemId = R.id.bottomMenu_tv
 
     }
+
     fun getCurrentBackground(): Int {
         val currFragment = supportFragmentManager.fragments.lastOrNull()
-        return when(currFragment?.tag) {
+        return when (currFragment?.tag) {
             "tv" -> {
                 R.drawable.fragment_tv_back_shape
             }
+
             "watch_later" -> {
                 R.drawable.fragment_watch_later_back_shape
             }
+
             "selections" -> {
                 R.drawable.fragment_selections_back_shape
             }
+
             else -> {
                 R.drawable.main_activity_def_back_shape
             }

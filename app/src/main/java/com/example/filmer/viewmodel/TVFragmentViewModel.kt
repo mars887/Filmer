@@ -17,12 +17,13 @@ class TVFragmentViewModel : ViewModel() {
 
     init {
         App.instance.appComponent.inject(this)
-
-        val films = interactor.getFilmDataBase()
-        filmListData.postValue(films)
+        loadNewFilmList()
     }
 
-    fun loadNewFilmList() {
+    fun loadNewFilmList(onReload: Boolean = false) {
+        if (System.currentTimeMillis() - interactor.lastApiRequest < interactor.RequestTimeout) {
+            return
+        }
         interactor.loadNewFilms(object : ApiCallback {
             override fun onSuccess() {
                 filmListData.postValue(interactor.getFilmDataBase())
@@ -30,9 +31,15 @@ class TVFragmentViewModel : ViewModel() {
             }
 
             override fun onFailure() {
+                filmListData.postValue(interactor.getFilmDataBase())
                 Log.d("bebe", "failure")
             }
-        })
+        },onReload)
+    }
+
+    fun reloadFilmList() {
+        interactor.clearFilmList()
+        loadNewFilmList(true)
     }
 
     interface ApiCallback {

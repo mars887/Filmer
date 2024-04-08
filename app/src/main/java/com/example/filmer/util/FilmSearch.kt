@@ -1,5 +1,6 @@
 package com.example.filmer.util
 
+import android.util.Log
 import com.example.filmer.data.FilmData
 import com.example.filmer.views.rvadapters.RAdapter
 import javax.inject.Inject
@@ -12,6 +13,8 @@ class FilmSearch @Inject constructor() {
         adapter: RAdapter,
         onlyFavorites: Boolean = false
     ) {
+        Log.d("bebe","newList - ${filmsDataBase.size} : adapter - ${adapter.data.size}")
+
         val list = adapter.data
         var origin = ArrayList<FilmData>()
         if (onlyFavorites) {
@@ -27,9 +30,11 @@ class FilmSearch @Inject constructor() {
                         it.title.lowercase().startsWith(text.lowercase())
             } as ArrayList<FilmData>
         }
+        Log.d("bebe","origin - ${origin.size}")
 
         var minus = 0
         filmsDataBase.forEachIndexed { i, data ->
+            Log.d("bebe","${origin.contains(data)} ${!list.contains(data)}")
             if (origin.contains(data)) {
                 if (!list.contains(data)) {
                     list.add(i - minus, data)
@@ -43,5 +48,12 @@ class FilmSearch @Inject constructor() {
                 minus++
             }
         }
+        val toRemove = list.filter { !origin.contains(it) }
+        toRemove.forEach {
+            val index = list.indexOf(it)
+            list.remove(it)
+            adapter.notifyItemRemoved(index)
+        }
+        Log.d("bebe","post adapter - ${adapter.data.size}")
     }
 }

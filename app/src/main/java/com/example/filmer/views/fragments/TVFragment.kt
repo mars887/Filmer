@@ -1,7 +1,6 @@
 package com.example.filmer.views.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,6 +28,7 @@ import javax.inject.Inject
 class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
     private lateinit var binding: FragmentTvBinding
     private lateinit var adapter: RAdapter
+
     @Inject
     lateinit var filmSearch: Lazy<FilmSearch>
     private var lastSearch: String? = null
@@ -128,12 +128,21 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
         binding.searchView.setOnClickListener {
             binding.searchView.isIconified = false
         }
+
+        initPullToRefresh()
     }
 
     private fun updateSearch() {
         filmSearch.get().search(filmsDataBase, lastSearch, adapter, onlyFavorites)
-        if (adapter.data.size < 30) {
+        if (adapter.data.size < 20) {
             viewModel.loadNewFilmList()
+        }
+    }
+
+    private fun initPullToRefresh() {
+        binding.pullToRefresh.setOnRefreshListener {
+            viewModel.reloadFilmList()
+            binding.pullToRefresh.isRefreshing = false
         }
     }
 

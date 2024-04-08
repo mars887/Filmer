@@ -23,4 +23,10 @@
         android:title="Selections"
         app:showAsAction="withText" />
 
+    <item
+        android:id="@+id/bottomMenu_settings"
+        android:icon="@drawable/baseline_settings_24"
+        android:title="Settings"
+        app:showAsAction="withText" />
+
 </menu>

@@ -2,7 +2,6 @@ package com.example.filmer.views.rvadapters
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.example.filmer.views.rvadapters.RAdapter
 
 class RItemInteraction(val adapter: RAdapter) : ItemTouchHelper.Callback() {
 

@@ -4,6 +4,8 @@ import android.app.Application
 import android.content.Context
 import com.example.filmer.di.AppComponent
 import com.example.filmer.di.DaggerAppComponent
+import com.example.filmer.di.modules.DomainModule
+import com.example.filmer.di.modules.RemoteModule
 
 class App : Application() {
 
@@ -13,7 +15,10 @@ class App : Application() {
         super.onCreate()
         instance = this
 
-        appComponent = DaggerAppComponent.create()
+        appComponent = DaggerAppComponent.builder()
+            .remoteModule(RemoteModule())
+            .domainModule(DomainModule(this))
+            .build()
     }
 
     companion object {

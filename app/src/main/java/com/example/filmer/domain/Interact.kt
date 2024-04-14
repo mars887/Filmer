@@ -13,6 +13,7 @@ import com.example.filmer.viewmodel.TVFragmentViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.concurrent.Executors
 import javax.inject.Inject
 
 class Interact @Inject constructor(
@@ -31,7 +32,7 @@ class Interact @Inject constructor(
     }
 
     fun loadNewFilms(callback: TVFragmentViewModel.ApiCallback, onReload: Boolean = false) {
-        Log.d("bebe","loading new films...")
+        Log.d("bebe", "loading new films...")
         lastApiRequest = System.currentTimeMillis()
         val currCategory = getDefCategoryFP()
 
@@ -43,7 +44,6 @@ class Interact @Inject constructor(
         )
             .enqueue(object : Callback<ApiQResult> {
                 override fun onResponse(call: Call<ApiQResult>, response: Response<ApiQResult>) {
-                    val sqlDataSize = sqlInteractor.getDbSize()
                     try {
                         val data =
                             ResultToFilmsConverter.convertToFilmsList(response.body()?.results!!)
@@ -51,26 +51,24 @@ class Interact @Inject constructor(
                         dbase.addFilms(data)
                         if (onReload && data.isNotEmpty())
                             sqlInteractor.setNewFilmsListToDb(data)
-                        else if(data.isNotEmpty())
+                        else if (data.isNotEmpty())
                             sqlInteractor.addFilmsToDb(data)
                         callback.onSuccess()
                     } catch (e: Exception) {
-                        if (sqlDataSize > dbase.getSize()) {
-                            dbase.clearBase()
+                        Executors.newSingleThreadExecutor().execute {
                             dbase.addFilms(sqlInteractor.getAllFromDB())
                         }
                         callback.onFailure()
-                        Log.d("bebe",e.message ?: "")
+                        Log.d("bebe", e.message ?: "")
                     }
                 }
 
                 override fun onFailure(call: Call<ApiQResult>, t: Throwable) {
-                    if (sqlInteractor.getDbSize() > dbase.getSize()) {
-                        dbase.clearBase()
+                    Executors.newSingleThreadExecutor().execute {
                         dbase.addFilms(sqlInteractor.getAllFromDB())
                     }
                     callback.onFailure()
-                    Log.d("bebe",t.message ?: "")
+                    Log.d("bebe", t.message ?: "")
                 }
             })
     }

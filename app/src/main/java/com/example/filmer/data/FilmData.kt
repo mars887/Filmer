@@ -2,18 +2,23 @@ package com.example.filmer.data
 
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.Index
+import androidx.room.PrimaryKey
 
-
-data class FilmData(
-    val poster: String,
-    val title: String,
-    val description: String,
-    var rating: Double,
-    var isFavorite: Boolean = false
+@Entity(tableName = "cached_films", indices = [Index(value = ["title"], unique = true)])
+data class FilmData (
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @ColumnInfo(name = "poster") val poster: String,
+    @ColumnInfo(name = "title") val title: String,
+    @ColumnInfo(name = "description") val description: String,
+    @ColumnInfo(name = "rating")var rating: Double,
+    @ColumnInfo(name = "isFavorite") var isFavorite: Boolean = false
 ) : Parcelable {
 
 
-    constructor(parcel: Parcel) : this(
+    constructor(parcel: Parcel) : this(0,
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readString()!!,

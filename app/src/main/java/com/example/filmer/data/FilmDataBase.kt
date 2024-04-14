@@ -34,11 +34,14 @@ class FilmDataBase @Inject constructor() : DataBase<FilmData> {
     }
 
     override fun addFilms(films: List<FilmData>) {
-        films.forEach {
-            if (data.all { film -> it.title != film.title }) {
-                data.add(it)
+        synchronized(data) {
+            films.forEach {
+                if (data.all { film -> it.title != film.title }) {
+                    data.add(it)
+                }
             }
         }
+
     }
 
     fun getSize(): Int = data.size

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.example.filmer.App
 import com.example.filmer.data.FilmData
 import com.example.filmer.domain.Interact
+import java.util.concurrent.Executors
 import javax.inject.Inject
 
 class TVFragmentViewModel : ViewModel() {
@@ -24,17 +25,17 @@ class TVFragmentViewModel : ViewModel() {
         if (System.currentTimeMillis() - interactor.lastApiRequest < interactor.RequestTimeout) {
             return
         }
-        interactor.loadNewFilms(object : ApiCallback {
-            override fun onSuccess() {
-                filmListData.postValue(interactor.getFilmDataBase())
-                Log.d("bebe", "loaded")
-            }
+            interactor.loadNewFilms(object : ApiCallback {
+                override fun onSuccess() {
+                    filmListData.postValue(interactor.getFilmDataBase())
+                    Log.d("bebe", "loaded")
+                }
 
-            override fun onFailure() {
-                filmListData.postValue(interactor.getFilmDataBase())
-                Log.d("bebe", "failure")
-            }
-        },onReload)
+                override fun onFailure() {
+                    filmListData.postValue(interactor.getFilmDataBase())
+                    Log.d("bebe", "failure")
+                }
+            },onReload)
     }
 
     fun reloadFilmList() {

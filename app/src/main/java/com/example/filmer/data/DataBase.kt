@@ -1,7 +1,8 @@
 package com.example.filmer.data
 
+import androidx.lifecycle.LiveData
+
 interface DataBase<T> {
-    fun getAll() : List<T>
-    fun getByIndex(index: Int): T
+    fun getFilmDB() : LiveData<List<T>>
     fun addFilms(films: List<T>)
 }

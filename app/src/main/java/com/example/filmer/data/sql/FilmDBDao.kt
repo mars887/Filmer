@@ -1,5 +1,6 @@
 package com.example.filmer.data.sql
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -13,7 +14,7 @@ interface FilmDBDao {
     fun deleteAll()
 
     @Query("SELECT * FROM cached_films")
-    fun getAllFilms(): List<FilmData>
+    fun getAllFilms(): LiveData<List<FilmData>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(films: List<FilmData>)

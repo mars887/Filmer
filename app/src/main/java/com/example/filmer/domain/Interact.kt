@@ -1,6 +1,7 @@
 package com.example.filmer.domain
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import com.example.filmer.data.api.ApiQResult
 import com.example.filmer.data.api.FilmApi
 import com.example.filmer.data.api.FilmApiKey
@@ -25,16 +26,12 @@ class Interact @Inject constructor(
     var lastApiRequest = 0L
     val RequestTimeout = 500
 
-    fun getFilmDataBase(): List<FilmData> = dbase.getAll()
-
-    fun clearFilmList() {
-        dbase.clearBase()
-    }
+    fun getFilmDataBase(): LiveData<List<FilmData>> = dbase.getFilmDB()
 
     fun loadNewFilms(callback: TVFragmentViewModel.ApiCallback, onReload: Boolean = false) {
-        Log.d("bebe", "loading new films...")
         lastApiRequest = System.currentTimeMillis()
         val currCategory = getDefCategoryFP()
+        if (onReload) dbase.resetPage()
 
         filmApi.getFilms(
             currCategory,
@@ -48,27 +45,21 @@ class Interact @Inject constructor(
                         val data =
                             ResultToFilmsConverter.convertToFilmsList(response.body()?.results!!)
                         dbase.incrementLastLoadedPage()
-                        dbase.addFilms(data)
+
                         if (onReload && data.isNotEmpty())
                             sqlInteractor.setNewFilmsListToDb(data)
                         else if (data.isNotEmpty())
                             sqlInteractor.addFilmsToDb(data)
+
                         callback.onSuccess()
+
                     } catch (e: Exception) {
-                        Executors.newSingleThreadExecutor().execute {
-                            dbase.addFilms(sqlInteractor.getAllFromDB())
-                        }
                         callback.onFailure()
-                        Log.d("bebe", e.message ?: "")
                     }
                 }
 
                 override fun onFailure(call: Call<ApiQResult>, t: Throwable) {
-                    Executors.newSingleThreadExecutor().execute {
-                        dbase.addFilms(sqlInteractor.getAllFromDB())
-                    }
                     callback.onFailure()
-                    Log.d("bebe", t.message ?: "")
                 }
             })
     }

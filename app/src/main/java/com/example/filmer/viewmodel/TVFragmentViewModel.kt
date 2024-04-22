@@ -1,6 +1,7 @@
 package com.example.filmer.viewmodel
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.filmer.App
@@ -11,40 +12,41 @@ import javax.inject.Inject
 
 class TVFragmentViewModel : ViewModel() {
 
-    val filmListData = MutableLiveData<List<FilmData>>()
+    var filmListData : LiveData<List<FilmData>>
 
     @Inject
     lateinit var interactor: Interact
 
     init {
         App.instance.appComponent.inject(this)
-        loadNewFilmList()
+        filmListData = interactor.getFilmDataBase()
     }
 
-    fun loadNewFilmList(onReload: Boolean = false) {
+    fun loadNewFilmList(onReload: Boolean = false,onSuccess: OnSuccess? = null,onFailure: OnFailure? = null) {
         if (System.currentTimeMillis() - interactor.lastApiRequest < interactor.RequestTimeout) {
             return
         }
             interactor.loadNewFilms(object : ApiCallback {
                 override fun onSuccess() {
-                    filmListData.postValue(interactor.getFilmDataBase())
+                    onSuccess?.onSuccess()
                     Log.d("bebe", "loaded")
                 }
 
                 override fun onFailure() {
-                    filmListData.postValue(interactor.getFilmDataBase())
+                    onFailure?.onFailure()
                     Log.d("bebe", "failure")
                 }
             },onReload)
     }
 
-    fun reloadFilmList() {
-        interactor.clearFilmList()
-        loadNewFilmList(true)
-    }
-
     interface ApiCallback {
         fun onSuccess()
+        fun onFailure()
+    }
+    fun interface OnSuccess {
+        fun onSuccess()
+    }
+    fun interface OnFailure {
         fun onFailure()
     }
 }

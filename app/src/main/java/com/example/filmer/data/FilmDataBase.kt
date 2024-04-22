@@ -1,9 +1,11 @@
 package com.example.filmer.data
 
+import androidx.lifecycle.LiveData
+import com.example.filmer.data.sql.FilmDBDao
+import java.util.concurrent.Executors
 import javax.inject.Inject
 
-class FilmDataBase @Inject constructor() : DataBase<FilmData> {
-    val data = mutableListOf<FilmData>()
+class FilmDataBase @Inject constructor(private val filmDao: FilmDBDao) : DataBase<FilmData> {
     private var lastLoadedPage = 1
     private var onCategory: String? = null
 
@@ -25,30 +27,14 @@ class FilmDataBase @Inject constructor() : DataBase<FilmData> {
         lastLoadedPage = 1
     }
 
-    override fun getAll(): List<FilmData> {
-        return data
-    }
+    override fun getFilmDB(): LiveData<List<FilmData>> = filmDao.getAllFilms()
 
-    override fun getByIndex(index: Int): FilmData {
-        return data[index]
-    }
+
 
     override fun addFilms(films: List<FilmData>) {
-        synchronized(data) {
-            films.forEach {
-                if (data.all { film -> it.title != film.title }) {
-                    data.add(it)
-                }
-            }
+        Executors.newSingleThreadExecutor().execute {
+            filmDao.insertAll(films)
         }
 
-    }
-
-    fun getSize(): Int = data.size
-
-
-    fun clearBase() {
-        resetPage()
-        data.clear()
     }
 }

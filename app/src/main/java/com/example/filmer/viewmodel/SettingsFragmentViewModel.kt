@@ -22,9 +22,7 @@ class SettingsFragmentViewModel : ViewModel() {
     }
 
     fun putCategoryProperty(category: String) {
-        if(interactor.saveDefCategoryTP(category)) {
-            interactor.clearFilmList()
-        }
+        interactor.saveDefCategoryTP(category)
         getCategoryProperty()
     }
 }

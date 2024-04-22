@@ -2,6 +2,7 @@ package com.example.filmer.data.db
 
 import android.content.ContentValues
 import android.database.Cursor
+import androidx.lifecycle.LiveData
 import com.example.filmer.data.FilmData
 import com.example.filmer.data.sql.FilmDBDao
 import java.util.concurrent.Executors
@@ -22,7 +23,5 @@ class SQLInteractor @Inject constructor(private val filmDBDao: FilmDBDao) {
         }
     }
 
-    fun getAllFromDB(): List<FilmData> {
-        return filmDBDao.getAllFilms()
-    }
+    fun getAllFromDB(): LiveData<List<FilmData>> = filmDBDao.getAllFilms()
 }

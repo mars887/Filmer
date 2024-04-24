@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -141,8 +142,12 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
 
     private fun initPullToRefresh() {
         binding.pullToRefresh.setOnRefreshListener {
-            viewModel.reloadFilmList()
-            binding.pullToRefresh.isRefreshing = false
+            viewModel.loadNewFilmList(true, onSuccess = {
+                binding.pullToRefresh.isRefreshing = false
+            }, onFailure = {
+                binding.pullToRefresh.isRefreshing = false
+                Toast.makeText(this@TVFragment.requireContext(),"loading error", Toast.LENGTH_SHORT).show()
+            })
         }
     }
 

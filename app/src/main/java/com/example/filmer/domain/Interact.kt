@@ -11,6 +11,11 @@ import com.example.filmer.data.PreferenceProvider
 import com.example.filmer.data.api.ResultToFilmsConverter
 import com.example.filmer.data.db.SQLInteractor
 import com.example.filmer.viewmodel.TVFragmentViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -26,9 +31,12 @@ class Interact @Inject constructor(
     var lastApiRequest = 0L
     val RequestTimeout = 500
 
-    fun getFilmDataBase(): LiveData<List<FilmData>> = dbase.getFilmDB()
+    val scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+    var progressBarState = Channel<Boolean>(Channel.CONFLATED)
 
-    fun loadNewFilms(callback: TVFragmentViewModel.ApiCallback, onReload: Boolean = false) {
+    fun getFilmDataBase(): Flow<List<FilmData>> = dbase.getFilmDB()
+
+    fun loadNewFilms(onReload: Boolean = false) {
         lastApiRequest = System.currentTimeMillis()
         val currCategory = getDefCategoryFP()
         if (onReload) dbase.resetPage()
@@ -46,20 +54,26 @@ class Interact @Inject constructor(
                             ResultToFilmsConverter.convertToFilmsList(response.body()?.results!!)
                         dbase.incrementLastLoadedPage()
 
-                        if (onReload && data.isNotEmpty())
-                            sqlInteractor.setNewFilmsListToDb(data)
-                        else if (data.isNotEmpty())
-                            sqlInteractor.addFilmsToDb(data)
+                        scope.launch {
+                            if (onReload && data.isNotEmpty())
+                                sqlInteractor.setNewFilmsListToDb(data)
+                            else if (data.isNotEmpty())
+                                sqlInteractor.addFilmsToDb(data)
+                            progressBarState.send(false)
+                        }
 
-                        callback.onSuccess()
-
-                    } catch (e: Exception) {
-                        callback.onFailure()
+                    } catch (_: Exception) {
+                    } finally {
+                        scope.launch {
+                            progressBarState.send(false)
+                        }
                     }
                 }
 
                 override fun onFailure(call: Call<ApiQResult>, t: Throwable) {
-                    callback.onFailure()
+                    scope.launch {
+                        progressBarState.send(false)
+                    }
                 }
             })
     }

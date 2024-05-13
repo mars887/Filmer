@@ -1,7 +1,7 @@
 package com.example.filmer.data
 
-import androidx.lifecycle.LiveData
 import com.example.filmer.data.sql.FilmDBDao
+import io.reactivex.rxjava3.core.Observable
 import kotlinx.coroutines.flow.Flow
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -28,7 +28,7 @@ class FilmDataBase @Inject constructor(private val filmDao: FilmDBDao) : DataBas
         lastLoadedPage = 1
     }
 
-    override fun getFilmDB(): Flow<List<FilmData>> = filmDao.getAllFilms()
+    override fun getFilmDB(): Observable<List<FilmData>> = filmDao.getAllFilms()
 
 
 

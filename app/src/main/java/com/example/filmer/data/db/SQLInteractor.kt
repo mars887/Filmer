@@ -5,6 +5,7 @@ import android.database.Cursor
 import androidx.lifecycle.LiveData
 import com.example.filmer.data.FilmData
 import com.example.filmer.data.sql.FilmDBDao
+import io.reactivex.rxjava3.core.Observable
 import kotlinx.coroutines.flow.Flow
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -22,5 +23,5 @@ class SQLInteractor @Inject constructor(private val filmDBDao: FilmDBDao) {
 
     }
 
-    fun getAllFromDB(): Flow<List<FilmData>> = filmDBDao.getAllFilms()
+    fun getAllFromDB(): Observable<List<FilmData>> = filmDBDao.getAllFilms()
 }

@@ -7,6 +7,11 @@ import androidx.lifecycle.ViewModel
 import com.example.filmer.App
 import com.example.filmer.data.FilmData
 import com.example.filmer.domain.Interact
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.subjects.BehaviorSubject
+import io.reactivex.rxjava3.subjects.PublishSubject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -16,11 +21,12 @@ import javax.inject.Inject
 
 class TVFragmentViewModel : ViewModel() {
 
-    var filmListData: Flow<List<FilmData>>
+    var filmListData: Observable<List<FilmData>>
 
     @Inject
     lateinit var interactor: Interact
-    val showProgressBar: Channel<Boolean>
+    val showProgressBar: BehaviorSubject<Boolean>
+    val autoDisposable = CompositeDisposable()
 
     init {
         App.instance.appComponent.inject(this)
@@ -35,4 +41,14 @@ class TVFragmentViewModel : ViewModel() {
         }
         interactor.loadNewFilms(onReload)
     }
+
+    override fun onCleared() {
+        super.onCleared()
+        autoDisposable.dispose()
+    }
+
+}
+
+fun Disposable.bindTo(tvvmodel: TVFragmentViewModel) {
+    tvvmodel.autoDisposable.add(this)
 }

@@ -7,46 +7,32 @@ import androidx.lifecycle.ViewModel
 import com.example.filmer.App
 import com.example.filmer.data.FilmData
 import com.example.filmer.domain.Interact
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import java.util.concurrent.Executors
 import javax.inject.Inject
 
 class TVFragmentViewModel : ViewModel() {
 
-    var filmListData : LiveData<List<FilmData>>
+    var filmListData: Flow<List<FilmData>>
 
     @Inject
     lateinit var interactor: Interact
+    val showProgressBar: Channel<Boolean>
 
     init {
         App.instance.appComponent.inject(this)
+        showProgressBar = interactor.progressBarState
         filmListData = interactor.getFilmDataBase()
+        loadNewFilmList()
     }
 
-    fun loadNewFilmList(onReload: Boolean = false,onSuccess: OnSuccess? = null,onFailure: OnFailure? = null) {
+    fun loadNewFilmList(onReload: Boolean = false) {
         if (System.currentTimeMillis() - interactor.lastApiRequest < interactor.RequestTimeout) {
             return
         }
-            interactor.loadNewFilms(object : ApiCallback {
-                override fun onSuccess() {
-                    onSuccess?.onSuccess()
-                    Log.d("bebe", "loaded")
-                }
-
-                override fun onFailure() {
-                    onFailure?.onFailure()
-                    Log.d("bebe", "failure")
-                }
-            },onReload)
-    }
-
-    interface ApiCallback {
-        fun onSuccess()
-        fun onFailure()
-    }
-    fun interface OnSuccess {
-        fun onSuccess()
-    }
-    fun interface OnFailure {
-        fun onFailure()
+        interactor.loadNewFilms(onReload)
     }
 }

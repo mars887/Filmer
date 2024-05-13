@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.filmer.data.FilmData
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FilmDBDao {
@@ -14,7 +15,7 @@ interface FilmDBDao {
     fun deleteAll()
 
     @Query("SELECT * FROM cached_films")
-    fun getAllFilms(): LiveData<List<FilmData>>
+    fun getAllFilms(): Flow<List<FilmData>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(films: List<FilmData>)

@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,6 +25,10 @@ import com.example.filmer.util.AnimationHelper
 import com.example.filmer.viewmodel.TVFragmentViewModel
 import com.example.filmer.views.MainActivity
 import dagger.Lazy
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
@@ -65,9 +70,21 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
 
         App.instance.appComponent.inject(this)
 
-        viewModel.filmListData.observe(viewLifecycleOwner) {
-            filmsDataBase = it
-            updateSearch()
+        viewModel.viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                viewModel.filmListData.collect {
+                    withContext(Dispatchers.Main) {
+                        filmsDataBase = it
+                    }
+                }
+            }
+        }
+        viewModel.viewModelScope.launch {
+            for(element in viewModel.showProgressBar) {
+                launch(Dispatchers.Main) {
+                    binding.pullToRefresh.isRefreshing = element
+                }
+            }
         }
 
         AnimationHelper.performFragmentCircularRevealAnimation(
@@ -142,12 +159,7 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
 
     private fun initPullToRefresh() {
         binding.pullToRefresh.setOnRefreshListener {
-            viewModel.loadNewFilmList(true, onSuccess = {
-                binding.pullToRefresh.isRefreshing = false
-            }, onFailure = {
-                binding.pullToRefresh.isRefreshing = false
-                Toast.makeText(this@TVFragment.requireContext(),"loading error", Toast.LENGTH_SHORT).show()
-            })
+            viewModel.loadNewFilmList(true)
         }
     }
 

@@ -60,10 +60,14 @@ dependencies {
     
     implementation ("androidx.room:room-runtime:2.6.1")
     implementation ("androidx.room:room-ktx:2.6.1")
+    implementation ("androidx.room:room-rxjava3:2.7.0-alpha01")
     kapt ("androidx.room:room-compiler:2.6.1")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("androidx.fragment:fragment-ktx:1.7.0")
+
+    implementation("io.reactivex.rxjava3:rxjava:3.0.10")
+    implementation("io.reactivex.rxjava3:rxandroid:3.0.0")
 
 }

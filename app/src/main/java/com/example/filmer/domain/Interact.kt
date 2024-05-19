@@ -1,25 +1,20 @@
 package com.example.filmer.domain
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import com.example.filmer.data.api.ApiQResult
-import com.example.filmer.data.api.FilmApi
-import com.example.filmer.data.api.FilmApiKey
 import com.example.filmer.data.FilmData
 import com.example.filmer.data.FilmDataBase
 import com.example.filmer.data.PreferenceProvider
+import com.example.filmer.data.api.ApiQResult
+import com.example.filmer.data.api.FilmApi
+import com.example.filmer.data.api.FilmApiKey
 import com.example.filmer.data.api.ResultToFilmsConverter
 import com.example.filmer.data.db.SQLInteractor
-import com.example.filmer.viewmodel.TVFragmentViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.subjects.BehaviorSubject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.concurrent.Executors
 import javax.inject.Inject
 
 class Interact @Inject constructor(
@@ -31,10 +26,9 @@ class Interact @Inject constructor(
     var lastApiRequest = 0L
     val RequestTimeout = 500
 
-    val scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
-    var progressBarState = Channel<Boolean>(Channel.CONFLATED)
+    var progressBarState: BehaviorSubject<Boolean> = BehaviorSubject.create()
 
-    fun getFilmDataBase(): Flow<List<FilmData>> = dbase.getFilmDB()
+    fun getFilmDataBase(): Observable<List<FilmData>> = dbase.getFilmDB()
 
     fun loadNewFilms(onReload: Boolean = false) {
         lastApiRequest = System.currentTimeMillis()
@@ -54,26 +48,24 @@ class Interact @Inject constructor(
                             ResultToFilmsConverter.convertToFilmsList(response.body()?.results!!)
                         dbase.incrementLastLoadedPage()
 
-                        scope.launch {
+                        Completable.fromSingle<List<FilmData>> {
                             if (onReload && data.isNotEmpty())
                                 sqlInteractor.setNewFilmsListToDb(data)
                             else if (data.isNotEmpty())
                                 sqlInteractor.addFilmsToDb(data)
-                            progressBarState.send(false)
+                            progressBarState.onNext(false)
                         }
+                            .subscribeOn(Schedulers.io())
+                            .subscribe()
 
                     } catch (_: Exception) {
-                    } finally {
-                        scope.launch {
-                            progressBarState.send(false)
-                        }
+                        progressBarState.onNext(false)
                     }
                 }
 
                 override fun onFailure(call: Call<ApiQResult>, t: Throwable) {
-                    scope.launch {
-                        progressBarState.send(false)
-                    }
+                    progressBarState.onNext(false)
+
                 }
             })
     }

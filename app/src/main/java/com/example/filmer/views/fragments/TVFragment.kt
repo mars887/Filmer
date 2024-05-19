@@ -23,8 +23,11 @@ import com.example.filmer.data.FilmData
 import com.example.filmer.databinding.FragmentTvBinding
 import com.example.filmer.util.AnimationHelper
 import com.example.filmer.viewmodel.TVFragmentViewModel
+import com.example.filmer.viewmodel.bindTo
 import com.example.filmer.views.MainActivity
 import dagger.Lazy
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -70,22 +73,21 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
 
         App.instance.appComponent.inject(this)
 
-        viewModel.viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                viewModel.filmListData.collect {
-                    withContext(Dispatchers.Main) {
-                        filmsDataBase = it
-                    }
-                }
-            }
-        }
-        viewModel.viewModelScope.launch {
-            for(element in viewModel.showProgressBar) {
-                launch(Dispatchers.Main) {
-                    binding.pullToRefresh.isRefreshing = element
-                }
-            }
-        }
+        viewModel.filmListData
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                filmsDataBase = it
+            }.bindTo(viewModel)
+
+
+        viewModel.showProgressBar
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                binding.pullToRefresh.isRefreshing = it
+            }.bindTo(viewModel)
+
 
         AnimationHelper.performFragmentCircularRevealAnimation(
             binding.tvFragmentRoot,

@@ -39,7 +39,16 @@ class TVFragmentViewModel : ViewModel() {
         if (System.currentTimeMillis() - interactor.lastApiRequest < interactor.RequestTimeout) {
             return
         }
+        println("loading $onReload")
         interactor.loadNewFilms(onReload)
+    }
+
+    fun searchNewFilmList(query: String,onReload: Boolean = false) {
+        if (System.currentTimeMillis() - interactor.lastApiRequest < interactor.RequestTimeout) {
+            return
+        }
+        println("searching")
+        interactor.searchNewFilms(query,onReload)
     }
 
     override fun onCleared() {

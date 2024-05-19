@@ -17,9 +17,11 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
+import com.example.filmer.App
 import com.example.filmer.R
 import com.example.filmer.data.api.FilmApiConstants
 import com.example.filmer.data.FilmData
+import com.example.filmer.data.db.SQLInteractor
 import com.example.filmer.databinding.FragmentFilmDetailsBinding
 import com.example.filmer.viewmodel.FilmDetailsViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -28,12 +30,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class FilmDetailsFragment : Fragment() {
     private lateinit var binding: FragmentFilmDetailsBinding
     private val viewModel: FilmDetailsViewModel by viewModels()
     private lateinit var film: FilmData
     private val scope = CoroutineScope(Dispatchers.IO)
+    @Inject lateinit var sqlInteractor: SQLInteractor
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,6 +49,8 @@ class FilmDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        App.instance.appComponent.inject(this)
 
         film = arguments?.get("film") as FilmData
 
@@ -62,6 +68,8 @@ class FilmDetailsFragment : Fragment() {
             favoriteFab.setOnClickListener {
                 film.isFavorite = !film.isFavorite
                 favoriteFab.setImageResource(if (film.isFavorite) R.drawable.baseline_favorite_24 else R.drawable.bottom_bar_favorite_icon)
+                if (film.isFavorite) sqlInteractor.addToFavorites(film)
+                else sqlInteractor.removeFromFavorites(film)
             }
 
             shareFab.setOnClickListener {

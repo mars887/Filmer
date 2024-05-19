@@ -1,27 +1,46 @@
 package com.example.filmer.data.db
 
-import android.content.ContentValues
-import android.database.Cursor
-import androidx.lifecycle.LiveData
 import com.example.filmer.data.FilmData
+import com.example.filmer.data.sql.FavoriteFilmData
+import com.example.filmer.data.sql.FavoritesDBDao
 import com.example.filmer.data.sql.FilmDBDao
-import io.reactivex.rxjava3.core.Observable
-import kotlinx.coroutines.flow.Flow
-import java.util.concurrent.Executors
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
-class SQLInteractor @Inject constructor(private val filmDBDao: FilmDBDao) {
+class SQLInteractor @Inject constructor(
+    private val filmDBDao: FilmDBDao,
+    private val favoritesDBDao: FavoritesDBDao,
+    private val scope: CoroutineScope
+) {
 
     fun addFilmsToDb(films: List<FilmData>) {
-            filmDBDao.insertAll(films)
-
+        filmDBDao.insertAll(films)
     }
 
     fun setNewFilmsListToDb(films: List<FilmData>) {
-            filmDBDao.deleteAll()
-            filmDBDao.insertAll(films)
-
+        filmDBDao.deleteAll()
+        filmDBDao.insertAll(films)
     }
 
-    fun getAllFromDB(): Observable<List<FilmData>> = filmDBDao.getAllFilms()
+    fun getAllFilms() = filmDBDao.getAllFilms()
+
+    fun getAllFavorites() = favoritesDBDao.getAllFavorites()
+
+    fun addToFavorites(filmData: FilmData) {
+        scope.launch {
+            filmData.isFavorite = true
+            favoritesDBDao.insertFavorite(FavoriteFilmData(filmData))
+            filmDBDao.insertFilm(filmData)
+        }
+    }
+
+    fun removeFromFavorites(filmData: FilmData) {
+        scope.launch {
+            filmData.isFavorite = false
+            favoritesDBDao.deleteFavorite(FavoriteFilmData(filmData))
+            filmDBDao.insertFilm(filmData)
+        }
+    }
 }

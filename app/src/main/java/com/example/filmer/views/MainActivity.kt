@@ -42,12 +42,7 @@ class MainActivity : AppCompatActivity() {
                     val tag = "tv"
                     val fragment = checkFragmentExistence(tag)
                     if (fragment != null) {
-                        if ((fragment as TVFragment).countOfFavorites() > 0) {
-                            fragment.onlyFavorites = true
-                        } else {
-                            Toast.makeText(this, "no favorites!", Toast.LENGTH_SHORT).show()
-                            return@setOnItemSelectedListener false
-                        }
+                        (fragment as TVFragment).onlyFavorites = true
                     }
 
                     changeFragment(fragment ?: TVFragment(true), tag)

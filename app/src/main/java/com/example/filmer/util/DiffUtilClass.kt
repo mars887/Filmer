@@ -1,9 +1,9 @@
 package com.example.filmer.util
 
 import androidx.recyclerview.widget.DiffUtil
-import com.example.filmer.data.FilmData
+import com.example.sql_module.FilmData
 
-class DiffUtilClass(val oldList: ArrayList<FilmData>, val newList: ArrayList<FilmData>) :
+class DiffUtilClass(val oldList: ArrayList<com.example.sql_module.FilmData>, val newList: ArrayList<com.example.sql_module.FilmData>) :
     DiffUtil.Callback() {
 
     override fun getOldListSize(): Int {

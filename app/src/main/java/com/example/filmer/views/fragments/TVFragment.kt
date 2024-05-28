@@ -5,11 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
-import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,7 +17,7 @@ import com.example.filmer.views.rvadapters.RAdapter
 import com.example.filmer.views.rvadapters.RItemDecorator
 import com.example.filmer.views.rvadapters.RItemInteraction
 import com.example.filmer.util.FilmSearch
-import com.example.filmer.data.FilmData
+import com.example.sql_module.FilmData
 import com.example.filmer.databinding.FragmentTvBinding
 import com.example.filmer.util.AnimationHelper
 import com.example.filmer.viewmodel.TVFragmentViewModel
@@ -28,10 +26,6 @@ import com.example.filmer.views.MainActivity
 import dagger.Lazy
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
@@ -46,7 +40,7 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
         ViewModelProvider.NewInstanceFactory().create(TVFragmentViewModel::class.java)
     }
 
-    private var filmsDataBase = listOf<FilmData>()
+    private var filmsDataBase = listOf<com.example.sql_module.FilmData>()
         set(value) {
             if (field == value) return
             field = value
@@ -100,7 +94,7 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
         recyc.layoutManager = LinearLayoutManager(requireContext())
 
         adapter = RAdapter(object : RAdapter.OnItemClickListener {
-            override fun click(film: FilmData) {
+            override fun click(film: com.example.sql_module.FilmData) {
                 (requireActivity() as MainActivity).launchDetailsFragment(film)
             }
         })
@@ -116,7 +110,7 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
             }
         })
 
-        val dataList = ArrayList<FilmData>()
+        val dataList = ArrayList<com.example.sql_module.FilmData>()
         dataList.addAll(filmsDataBase)
 
         adapter.data = dataList

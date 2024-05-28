@@ -7,8 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.filmer.App
 import com.example.filmer.R
-import com.example.filmer.data.api.FilmApiConstants
-import com.example.filmer.data.FilmData
+import com.example.sql_module.FilmData
 import com.example.filmer.data.db.SQLInteractor
 import com.example.filmer.databinding.RvItemBinding
 import javax.inject.Inject
@@ -18,7 +17,7 @@ class RAdapter(
     private val showIsFavorite: Boolean = true
 ) :
     RecyclerView.Adapter<RAdapter.RViewHolder>() {
-    var data: ArrayList<FilmData> = ArrayList()
+    var data: ArrayList<com.example.sql_module.FilmData> = ArrayList()
     @Inject
     lateinit var sqlInteractor: SQLInteractor
 
@@ -39,7 +38,7 @@ class RAdapter(
         with(holder.binding) {
 
             Glide.with(root)
-                .load(FilmApiConstants.IMAGES_URL + "w342" + data1.poster)
+                .load(com.example.remote_module.entity.FilmApiConstants.IMAGES_URL + "w342" + data1.poster)
                 .centerCrop()
                 .into(posterImage)
 
@@ -68,7 +67,7 @@ class RAdapter(
     }
 
     interface OnItemClickListener {
-        fun click(film: FilmData)
+        fun click(film: com.example.sql_module.FilmData)
     }
 
     class RViewHolder(val binding: RvItemBinding) : RecyclerView.ViewHolder(binding.root)

@@ -1,16 +1,14 @@
 package com.example.filmer.data
 
 import com.example.filmer.data.db.SQLInteractor
-import com.example.filmer.data.sql.FavoriteFilmData
-import com.example.filmer.data.sql.FilmDBDao
+import com.example.sql_module.sql.FavoriteFilmData
 import io.reactivex.rxjava3.core.Observable
-import kotlinx.coroutines.flow.Flow
 import java.util.concurrent.Executors
 import javax.inject.Inject
 
 class FilmDataBase @Inject constructor(
     private val sqlInteractor: SQLInteractor
-) : DataBase<FilmData> {
+) : DataBase<com.example.sql_module.FilmData> {
     private var lastLoadedPage = 1
     private var onCategory: String? = null
     var lastLoadedFavorites: HashSet<FavoriteFilmData>? = null
@@ -39,7 +37,7 @@ class FilmDataBase @Inject constructor(
         lastLoadedPage = 1
     }
 
-    override fun getFilmDB(): Observable<List<FilmData>> =
+    override fun getFilmDB(): Observable<List<com.example.sql_module.FilmData>> =
         sqlInteractor.getAllFilms()
             .map { list ->
                 if (lastLoadedFavorites != null) {
@@ -55,12 +53,12 @@ class FilmDataBase @Inject constructor(
             }
 
 
-    override fun addFilms(films: List<FilmData>) {
+    override fun addFilms(films: List<com.example.sql_module.FilmData>) {
         Executors.newSingleThreadExecutor().execute {
             sqlInteractor.addFilmsToDb(films)
         }
     }
 
-    fun addFavorite(filmData: FilmData) = sqlInteractor.addToFavorites(filmData)
-    fun removeFavorite(filmData: FilmData) = sqlInteractor.removeFromFavorites(filmData)
+    fun addFavorite(filmData: com.example.sql_module.FilmData) = sqlInteractor.addToFavorites(filmData)
+    fun removeFavorite(filmData: com.example.sql_module.FilmData) = sqlInteractor.removeFromFavorites(filmData)
 }

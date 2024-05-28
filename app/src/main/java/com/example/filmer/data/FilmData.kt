@@ -55,4 +55,8 @@ data class FilmData (
     override fun toString(): String {
         return "id - $title"
     }
+
+    override fun hashCode(): Int {
+        return title.hashCode()
+    }
 }

@@ -14,7 +14,7 @@ object ResultToFilmsConverter {
                     description = it.overview,
                     rating = it.vote_average,
                     isFavorite = false,
-            )
+                )
             )
         }
         return result

@@ -110,7 +110,8 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
                 super.onScrolled(recyclerView, dx, dy)
                 if (onlyFavorites) return
                 if ((adapter.data.size - (binding.RView.layoutManager as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()) < 20) {
-                    viewModel.loadNewFilmList()
+                    if (lastSearch.isNullOrBlank()) viewModel.loadNewFilmList()
+                    else viewModel.searchNewFilmList(lastSearch!!)
                 }
             }
         })
@@ -132,15 +133,15 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
 
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                filmSearch.get().search(filmsDataBase, query, adapter, onlyFavorites)
                 lastSearch = query
+                updateSearch()
                 return false
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
                 if (filmsDataBase.size < 1000) {
-                    filmSearch.get().search(filmsDataBase, newText, adapter, onlyFavorites)
                     lastSearch = newText
+                    updateSearch()
                 }
                 return true
             }
@@ -153,15 +154,26 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
     }
 
     private fun updateSearch() {
-        filmSearch.get().search(filmsDataBase, lastSearch, adapter, onlyFavorites)
-        if (adapter.data.size < 20) {
-            viewModel.loadNewFilmList()
+        println("sup $lastSearch")
+        if (onlyFavorites) {
+            viewModel.interactor.dbase.lastLoadedFavorites?.map { it.toFilmData() }
+                ?.let {
+                    filmSearch.get().search(it, adapter, onlyFavorites,lastSearch)
+                }
+        } else {
+            filmSearch.get().search(filmsDataBase, adapter, onlyFavorites,lastSearch)
+            if (adapter.data.size < 20 && lastSearch.isNullOrBlank()) {
+                viewModel.loadNewFilmList()
+            } else if (!lastSearch.isNullOrBlank()) {
+                viewModel.searchNewFilmList(lastSearch!!, true)
+            }
         }
     }
 
     private fun initPullToRefresh() {
         binding.pullToRefresh.setOnRefreshListener {
-            viewModel.loadNewFilmList(true)
+            if (lastSearch.isNullOrBlank()) viewModel.loadNewFilmList(true)
+            else viewModel.searchNewFilmList(lastSearch!!, true)
         }
     }
 

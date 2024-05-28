@@ -5,15 +5,26 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.filmer.App
 import com.example.filmer.R
 import com.example.filmer.data.api.FilmApiConstants
 import com.example.filmer.data.FilmData
+import com.example.filmer.data.db.SQLInteractor
 import com.example.filmer.databinding.RvItemBinding
+import javax.inject.Inject
 
-class RAdapter(private val clickListenerner: OnItemClickListener, private val showIsFavorite: Boolean = true) :
+class RAdapter(
+    private val clickListenerner: OnItemClickListener,
+    private val showIsFavorite: Boolean = true
+) :
     RecyclerView.Adapter<RAdapter.RViewHolder>() {
-
     var data: ArrayList<FilmData> = ArrayList()
+    @Inject
+    lateinit var sqlInteractor: SQLInteractor
+
+    init {
+        App.instance.appComponent.inject(this)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -35,11 +46,13 @@ class RAdapter(private val clickListenerner: OnItemClickListener, private val sh
             val text = data1.title
             title.text = text
             description.text = data1.description
-            if(showIsFavorite) {
+            if (showIsFavorite) {
                 isFavorite.setImageResource(if (data1.isFavorite) R.drawable.baseline_favorite_24 else R.drawable.bottom_bar_favorite_icon)
                 isFavorite.setOnClickListener {
                     data1.isFavorite = !data1.isFavorite
                     isFavorite.setImageResource(if (data1.isFavorite) R.drawable.baseline_favorite_24 else R.drawable.bottom_bar_favorite_icon)
+                    if (data1.isFavorite) sqlInteractor.addToFavorites(data1)
+                    else sqlInteractor.removeFromFavorites(data1)
                 }
             } else isFavorite.isVisible = false
 

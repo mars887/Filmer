@@ -8,3 +8,8 @@ import com.example.filmer.data.FilmData
 abstract class SQLFilmDatabase : RoomDatabase() {
     abstract fun filmDao(): FilmDBDao
 }
+
+@Database(entities = [FavoriteFilmData::class], version = 1, exportSchema = false)
+abstract class SQLFavoritesDatabase : RoomDatabase() {
+    abstract fun favoritesDao(): FavoritesDBDao
+}

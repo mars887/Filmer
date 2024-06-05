@@ -1,27 +1,18 @@
 package com.example.filmer.viewmodel
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.filmer.App
-import com.example.filmer.data.FilmData
+import com.example.sql_module.FilmData
 import com.example.filmer.domain.Interact
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
-import io.reactivex.rxjava3.subjects.PublishSubject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
-import java.util.concurrent.Executors
 import javax.inject.Inject
 
 class TVFragmentViewModel : ViewModel() {
 
-    var filmListData: Observable<List<FilmData>>
+    var filmListData: Observable<List<com.example.sql_module.FilmData>>
 
     @Inject
     lateinit var interactor: Interact

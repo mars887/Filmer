@@ -15,4 +15,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "filmer"
 include(":app")
- 
+include(":remote_module")
+include(":sql_module")

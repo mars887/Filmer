@@ -1,13 +1,12 @@
 package com.example.filmer.data.db
 
-import com.example.filmer.data.FilmData
-import com.example.filmer.data.sql.FavoriteFilmData
-import com.example.filmer.data.sql.FavoritesDBDao
-import com.example.filmer.data.sql.FilmDBDao
+import com.example.sql_module.FilmData
+import com.example.sql_module.sql.FavoriteFilmData
+import com.example.sql_module.sql.FavoritesDBDao
+import com.example.sql_module.sql.FilmDBDao
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.coroutines.CoroutineContext
 
 class SQLInteractor @Inject constructor(
     private val filmDBDao: FilmDBDao,

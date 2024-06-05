@@ -19,8 +19,7 @@ import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.example.filmer.App
 import com.example.filmer.R
-import com.example.filmer.data.api.FilmApiConstants
-import com.example.filmer.data.FilmData
+import com.example.sql_module.FilmData
 import com.example.filmer.data.db.SQLInteractor
 import com.example.filmer.databinding.FragmentFilmDetailsBinding
 import com.example.filmer.viewmodel.FilmDetailsViewModel
@@ -35,7 +34,7 @@ import javax.inject.Inject
 class FilmDetailsFragment : Fragment() {
     private lateinit var binding: FragmentFilmDetailsBinding
     private val viewModel: FilmDetailsViewModel by viewModels()
-    private lateinit var film: FilmData
+    private lateinit var film: com.example.sql_module.FilmData
     private val scope = CoroutineScope(Dispatchers.IO)
     @Inject lateinit var sqlInteractor: SQLInteractor
 
@@ -52,12 +51,12 @@ class FilmDetailsFragment : Fragment() {
 
         App.instance.appComponent.inject(this)
 
-        film = arguments?.get("film") as FilmData
+        film = arguments?.get("film") as com.example.sql_module.FilmData
 
         binding.apply {
 
             Glide.with(root)
-                .load(FilmApiConstants.IMAGES_URL + "w780" + film.poster)
+                .load(com.example.remote_module.entity.FilmApiConstants.IMAGES_URL + "w780" + film.poster)
                 .centerCrop()
                 .into(detailsPoster)
 
@@ -172,7 +171,7 @@ class FilmDetailsFragment : Fragment() {
             binding.progressBar.isVisible = true
 
             val job = scope.async {
-                viewModel.loadWallpaper(FilmApiConstants.IMAGES_URL + "original" + film.poster)
+                viewModel.loadWallpaper(com.example.remote_module.entity.FilmApiConstants.IMAGES_URL + "original" + film.poster)
             }
 
             saveToGallery(job.await())

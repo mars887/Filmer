@@ -5,10 +5,10 @@ import com.example.sql_module.FilmData
 import com.example.filmer.views.rvadapters.RAdapter
 import javax.inject.Inject
 
-class FilmSearch @Inject constructor() {
+class FilmSearch {
 
     fun search(
-        filmsDataBase: List<com.example.sql_module.FilmData>,
+        filmsDataBase: List<FilmData>,
         adapter: RAdapter,
         onlyFavorites: Boolean = false,
         query: String?
@@ -16,7 +16,7 @@ class FilmSearch @Inject constructor() {
         Log.d("bebe", "newList - ${filmsDataBase.size} : adapter - ${adapter.data.size}")
 
         val list = adapter.data
-        var origin = mutableListOf<com.example.sql_module.FilmData>()
+        var origin = mutableListOf<FilmData>()
         if (onlyFavorites) {
             filmsDataBase.forEach {
                 if (it.isFavorite) origin.add(it)

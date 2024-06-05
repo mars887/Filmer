@@ -25,4 +25,5 @@ class SettingsFragmentViewModel : ViewModel() {
         interactor.saveDefCategoryTP(category)
         getCategoryProperty()
     }
+
 }

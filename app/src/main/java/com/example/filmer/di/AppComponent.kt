@@ -1,7 +1,7 @@
 package com.example.filmer.di
 
+import com.example.filmer.App
 import com.example.filmer.di.modules.CoroutinesModule
-import com.example.sql_module.DatabaseModule
 import com.example.filmer.di.modules.DomainModule
 import com.example.filmer.viewmodel.SettingsFragmentViewModel
 import com.example.filmer.viewmodel.TVFragmentViewModel
@@ -30,4 +30,5 @@ interface AppComponent {
     fun inject(settingsFragmentViewModel: SettingsFragmentViewModel)
     fun inject(RAdapter: RAdapter)
     fun inject(filmDetailsFragment: FilmDetailsFragment)
+    fun inject(app: App)
 }

@@ -13,5 +13,8 @@
     <string name="permission_storage">Нет разрешения. Пожалуйста, предоставьте разрешение</string>
     <string name="downloaded_to_gallery">"Сохранено в галерею"</string>
     <string name="open">В галерею</string>
+    <string name="light_theme_rb_text">Light</string>
+    <string name="night_theme_rb_text">Dark</string>
+    <string name="app_theme_group_text">Тема приложения</string>
 
 </resources>

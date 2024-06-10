@@ -5,6 +5,7 @@ import com.example.sql_module.sql.FavoriteFilmData
 import com.example.sql_module.sql.FavoritesDBDao
 import com.example.sql_module.sql.FilmDBDao
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -42,4 +43,6 @@ class SQLInteractor @Inject constructor(
             filmDBDao.insertFilm(filmData)
         }
     }
+
+    fun getFilmByTitle(title: String) = filmDBDao.getFilmByTitle(title)
 }

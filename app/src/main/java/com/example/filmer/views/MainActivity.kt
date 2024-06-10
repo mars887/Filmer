@@ -31,44 +31,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        instance = this
 
-        pwBroadcast = PowerStatusBroadcast { action, state ->
-            when (action) {
-                Intent.ACTION_POWER_CONNECTED -> {
+        detailsFilmIntent = intent.getStringExtra("showDetailsTitle")
 
-                        Snackbar.make(
-                            this,
-                            binding.root,
-                            "charger connected",
-                            Snackbar.LENGTH_LONG
-                        )
-                            .setAnchorView(binding.bottomNavigation)
-                            .setAction("light mode?") {
-                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                                recreate()
-                                darkBeenEnabled = false
-                            }.show()
-
-                }
-
-                Intent.ACTION_BATTERY_LOW -> {
-                    if (!this.isDarkThemeOn()) {
-                        Snackbar.make(
-                            this,
-                            binding.root,
-                            "battery is low",
-                            Snackbar.LENGTH_LONG
-                        )
-                            .setAnchorView(binding.bottomNavigation)
-                            .setAction("dark mode?") {
-                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                                recreate()
-                                darkBeenEnabled = true
-                            }.show()
-                    }
-                }
-            }
-        }
+        initPowerBroadcast()
 
         val filter = IntentFilter(Intent.ACTION_POWER_CONNECTED)
         filter.addAction(Intent.ACTION_BATTERY_LOW)
@@ -100,6 +67,47 @@ class MainActivity : AppCompatActivity() {
 
         binding.bottomNavigation.selectedItemId = R.id.bottomMenu_tv
 
+
+    }
+
+    private fun initPowerBroadcast() {
+        pwBroadcast = PowerStatusBroadcast { action, state ->
+            when (action) {
+                Intent.ACTION_POWER_CONNECTED -> {
+
+                    Snackbar.make(
+                        this,
+                        binding.root,
+                        "charger connected",
+                        Snackbar.LENGTH_LONG
+                    )
+                        .setAnchorView(binding.bottomNavigation)
+                        .setAction("light mode?") {
+                            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                            recreate()
+                            darkBeenEnabled = false
+                        }.show()
+
+                }
+
+                Intent.ACTION_BATTERY_LOW -> {
+                    if (!this.isDarkThemeOn()) {
+                        Snackbar.make(
+                            this,
+                            binding.root,
+                            "battery is low",
+                            Snackbar.LENGTH_LONG
+                        )
+                            .setAnchorView(binding.bottomNavigation)
+                            .setAction("dark mode?") {
+                                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                                recreate()
+                                darkBeenEnabled = true
+                            }.show()
+                    }
+                }
+            }
+        }
     }
 
     private fun bottomNavigationEvent(it: Int): Boolean {
@@ -205,5 +213,11 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(pwBroadcast)
+    }
+
+    companion object {
+        var detailsFilmIntent: String? = null
+        lateinit var instance: MainActivity
+            private set
     }
 }

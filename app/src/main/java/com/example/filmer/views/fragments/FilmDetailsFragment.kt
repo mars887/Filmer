@@ -8,22 +8,26 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.example.filmer.App
 import com.example.filmer.R
-import com.example.sql_module.FilmData
 import com.example.filmer.data.db.SQLInteractor
 import com.example.filmer.databinding.FragmentFilmDetailsBinding
 import com.example.filmer.viewmodel.FilmDetailsViewModel
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -63,40 +67,60 @@ class FilmDetailsFragment : Fragment() {
             detailsDescription.text = film.description
             detailsToolbar.title = film.title
 
-            favoriteFab.setImageResource(if (film.isFavorite) R.drawable.baseline_favorite_24 else R.drawable.bottom_bar_favorite_icon)
+            val fabSize = popupMenuFab.customSize
+            val fabMargin = (detailsToolbar.minimumHeight - fabSize) / 2.0
+
+            // -------------------------------- favorite fab
+
+            favoriteFab.translationY = (-fabMargin).toFloat()
+            favoriteFab.translationX = (-fabMargin * 2 - fabSize).toFloat()
+
+            favoriteFab.setImageDrawable(AppCompatResources.getDrawable(requireContext(),if (film.isFavorite) R.drawable.baseline_favorite_24 else R.drawable.bottom_bar_favorite_icon))
             favoriteFab.setOnClickListener {
                 film.isFavorite = !film.isFavorite
-                favoriteFab.setImageResource(if (film.isFavorite) R.drawable.baseline_favorite_24 else R.drawable.bottom_bar_favorite_icon)
+                favoriteFab.setImageDrawable(AppCompatResources.getDrawable(requireContext(),if (film.isFavorite) R.drawable.baseline_favorite_24 else R.drawable.bottom_bar_favorite_icon))
                 if (film.isFavorite) sqlInteractor.addToFavorites(film)
                 else sqlInteractor.removeFromFavorites(film)
             }
 
-            shareFab.setOnClickListener {
-                val intent = Intent()
-                intent.action = Intent.ACTION_SEND
-                intent.putExtra(
-                    Intent.EXTRA_TEXT,
-                    "Check out this film: ${film.title} \n\n ${film.description}"
-                )
-                intent.type = "text/plain"
-                startActivity(Intent.createChooser(intent, "Share To:"))
-            }
+            // -------------------------------- popup menu fab
 
-            val fabSize = favoriteFab.customSize
-            val fabMargin = (detailsToolbar.minimumHeight - fabSize) / 2.0
-            favoriteFab.translationY = (-fabMargin).toFloat()
-            favoriteFab.translationX = (-fabMargin).toFloat()
+            popupMenuFab.translationY = (-fabMargin).toFloat()
+            popupMenuFab.translationX = (-fabMargin).toFloat()
 
-            shareFab.translationY = (-fabMargin).toFloat()
-            shareFab.translationX = (-fabMargin * 2 - fabSize).toFloat()
-
-            detailsFabDownloadWp.translationY = (-fabMargin).toFloat()
-            detailsFabDownloadWp.translationX = (-fabMargin * 3 - fabSize * 2).toFloat()
-
-            detailsFabDownloadWp.setOnClickListener {
-                performAsyncLoadOfPoster()
+            popupMenuFab.setOnClickListener {
+                showPopUpMenu(it)
             }
         }
+    }
+
+    private fun showPopUpMenu(view: View) {
+        val popUpMenu = PopupMenu(this.requireContext(), view)
+        popUpMenu.inflate(R.menu.film_details_popup_menu)
+        popUpMenu.setOnMenuItemClickListener { menuItem ->
+            return@setOnMenuItemClickListener when (menuItem.itemId) {
+                R.id.fdpu_download_poster -> {
+                    performAsyncLoadOfPoster()
+                    true
+                }
+
+                R.id.fdpu_share -> {
+                    shareFabPressed()
+                    true
+                }
+
+                R.id.fdpu_watch_later -> {
+                    App.instance.notificationsHelper.sendWatchLater(film)
+                    true
+                }
+
+                else -> false
+            }
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            popUpMenu.setForceShowIcon(true)
+        }
+        popUpMenu.show()
     }
 
     private fun checkPermission(): Boolean {
@@ -166,10 +190,12 @@ class FilmDetailsFragment : Fragment() {
             requestPermission()
             return
         }
+        val chandler = CoroutineExceptionHandler { coroutineContext, throwable ->
+            Log.e("poster_loader",throwable.message?: "")
+            throwable.printStackTrace()
+        }
 
-        MainScope().launch {
-            binding.progressBar.isVisible = true
-
+        scope.launch(chandler) {
             val job = scope.async {
                 viewModel.loadWallpaper(com.example.remote_module.entity.FilmApiConstants.IMAGES_URL + "original" + film.poster)
             }
@@ -190,7 +216,17 @@ class FilmDetailsFragment : Fragment() {
                 }
                 .show()
 
-            binding.progressBar.isVisible = false
         }
+    }
+
+    private fun shareFabPressed() {
+        val intent = Intent()
+        intent.action = Intent.ACTION_SEND
+        intent.putExtra(
+            Intent.EXTRA_TEXT,
+            "Check out this film: ${film.title} \n\n ${film.description}"
+        )
+        intent.type = "text/plain"
+        startActivity(Intent.createChooser(intent, "Share To:"))
     }
 }

@@ -32,15 +32,15 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
     private lateinit var binding: FragmentTvBinding
     private lateinit var adapter: RAdapter
 
-    @Inject
-    lateinit var filmSearch: Lazy<FilmSearch>
+    val filmSearch: FilmSearch = FilmSearch()
     private var lastSearch: String? = null
+    private var allInited = false
 
     private val viewModel by lazy {
         ViewModelProvider.NewInstanceFactory().create(TVFragmentViewModel::class.java)
     }
 
-    private var filmsDataBase = listOf<com.example.sql_module.FilmData>()
+    private var filmsDataBase = listOf<FilmData>()
         set(value) {
             if (field == value) return
             field = value
@@ -50,7 +50,7 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
     var onlyFavorites: Boolean = onlyFavorites
         set(value) {
             field = value
-            updateSearch()
+            if(allInited) updateSearch()
         }
 
 
@@ -59,13 +59,12 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentTvBinding.inflate(inflater, container, false)
+        App.instance.appComponent.inject(this)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        App.instance.appComponent.inject(this)
 
         viewModel.filmListData
             .subscribeOn(Schedulers.io())
@@ -94,7 +93,7 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
         recyc.layoutManager = LinearLayoutManager(requireContext())
 
         adapter = RAdapter(object : RAdapter.OnItemClickListener {
-            override fun click(film: com.example.sql_module.FilmData) {
+            override fun click(film: FilmData) {
                 (requireActivity() as MainActivity).launchDetailsFragment(film)
             }
         })
@@ -110,7 +109,7 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
             }
         })
 
-        val dataList = ArrayList<com.example.sql_module.FilmData>()
+        val dataList = ArrayList<FilmData>()
         dataList.addAll(filmsDataBase)
 
         adapter.data = dataList
@@ -145,6 +144,8 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
         }
 
         initPullToRefresh()
+        allInited = true
+        updateSearch()
     }
 
     private fun updateSearch() {
@@ -152,10 +153,10 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
         if (onlyFavorites) {
             viewModel.interactor.dbase.lastLoadedFavorites?.map { it.toFilmData() }
                 ?.let {
-                    filmSearch.get().search(it, adapter, onlyFavorites,lastSearch)
+                    filmSearch.search(it, adapter, onlyFavorites,lastSearch)
                 }
         } else {
-            filmSearch.get().search(filmsDataBase, adapter, onlyFavorites,lastSearch)
+            filmSearch.search(filmsDataBase, adapter, onlyFavorites,lastSearch)
             if (adapter.data.size < 20 && lastSearch.isNullOrBlank()) {
                 viewModel.loadNewFilmList()
             } else if (!lastSearch.isNullOrBlank()) {

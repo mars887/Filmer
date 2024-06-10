@@ -22,7 +22,7 @@ class Interact @Inject constructor(
 
     var progressBarState: BehaviorSubject<Boolean> = BehaviorSubject.create()
 
-    fun getFilmDataBase(): Observable<List<com.example.sql_module.FilmData>> = dbase.getFilmDB()
+    fun getFilmDataBase(): Observable<List<FilmData>> = dbase.getFilmDB()
 
     fun searchNewFilms(query: String, onReload: Boolean = false) {
         lastApiRequest = System.currentTimeMillis()
@@ -87,5 +87,10 @@ class Interact @Inject constructor(
             preferences.saveDefaultCategory(category)
             true
         } else false
+    }
+
+    fun getAppTheme() = preferences.getAppTheme()
+    fun setAppTheme(appTheme: String) {
+        preferences.saveAppTheme(appTheme)
     }
 }

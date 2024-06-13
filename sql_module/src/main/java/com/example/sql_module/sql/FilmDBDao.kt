@@ -16,6 +16,9 @@ interface FilmDBDao {
     @Query("SELECT * FROM cached_films")
     fun getAllFilms(): Observable<List<FilmData>>
 
+    @Query("SELECT * FROM cached_films WHERE title =:title")
+    fun getFilmByTitle(title: String): Observable<FilmData> // TODO where - like title
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(films: List<FilmData>)
 

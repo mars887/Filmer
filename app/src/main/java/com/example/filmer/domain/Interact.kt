@@ -93,4 +93,6 @@ class Interact @Inject constructor(
     fun setAppTheme(appTheme: String) {
         preferences.saveAppTheme(appTheme)
     }
+
+    fun getFilmByTitle(title: String): Observable<FilmData> = sqlInteractor.getFilmByTitle(title)
 }

@@ -12,9 +12,11 @@ class AnimationHelper {
     companion object {
         private const val menuItems = 5
 
-        fun performFragmentCircularRevealAnimation(rootView: View, activity: Activity, position: Int) {
-
-
+        fun performFragmentCircularRevealAnimation(
+            rootView: View,
+            activity: Activity,
+            position: Int
+        ) {
             Executors.newSingleThreadExecutor().execute {
 
                 while (true) {
@@ -28,21 +30,24 @@ class AnimationHelper {
                             val y: Int = rootView.y.roundToInt() + rootView.height
 
                             val startRadius = 0
-                            val endRadius = hypot(rootView.width.toDouble(), rootView.height.toDouble())
+                            val endRadius =
+                                hypot(rootView.width.toDouble(), rootView.height.toDouble())
 
-                            ViewAnimationUtils.createCircularReveal(
-                                rootView,
-                                x,
-                                y,
-                                startRadius.toFloat(),
-                                endRadius.toFloat()
-                            ).apply {
+                            try {
+                                ViewAnimationUtils.createCircularReveal(
+                                    rootView,
+                                    x,
+                                    y,
+                                    startRadius.toFloat(),
+                                    endRadius.toFloat()
+                                ).apply {
 
-                                duration = 400
+                                    duration = 400
 
-                                interpolator = AccelerateDecelerateInterpolator()
-
-                                start()
+                                    interpolator = AccelerateDecelerateInterpolator()
+                                    start()
+                                }
+                            } catch (_: Exception) {
                             }
 
                             rootView.visibility = View.VISIBLE

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/fdpu_download_poster"
+        android:title="save poster"
+        android:icon="@drawable/baseline_download_24" />
+
+    <item
+        android:id="@+id/fdpu_share"
+        android:title="share"
+        android:icon="@drawable/baseline_share_24" />
+
+    <item
+        android:id="@+id/fdpu_watch_later"
+        android:title="watch later"
+        android:icon="@drawable/baseline_watch_later_24" />
+</menu>

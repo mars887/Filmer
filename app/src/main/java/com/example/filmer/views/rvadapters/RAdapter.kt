@@ -17,7 +17,7 @@ class RAdapter(
     private val showIsFavorite: Boolean = true
 ) :
     RecyclerView.Adapter<RAdapter.RViewHolder>() {
-    var data: ArrayList<com.example.sql_module.FilmData> = ArrayList()
+    var data: ArrayList<FilmData> = ArrayList()
     @Inject
     lateinit var sqlInteractor: SQLInteractor
 
@@ -67,7 +67,7 @@ class RAdapter(
     }
 
     interface OnItemClickListener {
-        fun click(film: com.example.sql_module.FilmData)
+        fun click(film: FilmData)
     }
 
     class RViewHolder(val binding: RvItemBinding) : RecyclerView.ViewHolder(binding.root)

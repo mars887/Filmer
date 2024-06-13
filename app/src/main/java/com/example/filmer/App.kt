@@ -11,6 +11,7 @@ import com.example.filmer.di.AppComponent
 import com.example.filmer.di.DaggerAppComponent
 import com.example.filmer.di.modules.DomainModule
 import com.example.filmer.domain.Interact
+import com.example.filmer.notifications.NotificationHelper
 import com.example.remote_module.DaggerRemoteComponent
 import com.example.sql_module.DaggerSqlComponent
 import javax.inject.Inject
@@ -20,6 +21,8 @@ class App : Application() {
     lateinit var appComponent: AppComponent
     @Inject
     lateinit var interactor: Interact
+    @Inject
+    lateinit var notificationsHelper: NotificationHelper
 
     override fun onCreate() {
         super.onCreate()
@@ -42,6 +45,8 @@ class App : Application() {
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         }
+
+        notificationsHelper.init()
     }
 
     companion object {

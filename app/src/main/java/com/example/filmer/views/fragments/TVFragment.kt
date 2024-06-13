@@ -26,6 +26,9 @@ import com.example.filmer.views.MainActivity
 import dagger.Lazy
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
@@ -35,6 +38,9 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
     val filmSearch: FilmSearch = FilmSearch()
     private var lastSearch: String? = null
     private var allInited = false
+
+    @Inject
+    lateinit var scope: CoroutineScope
 
     private val viewModel by lazy {
         ViewModelProvider.NewInstanceFactory().create(TVFragmentViewModel::class.java)
@@ -50,7 +56,7 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
     var onlyFavorites: Boolean = onlyFavorites
         set(value) {
             field = value
-            if(allInited) updateSearch()
+            if (allInited) updateSearch()
         }
 
 
@@ -124,6 +130,25 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
             AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.recyc_animation_anim)
         recyc.layoutAnimation = anim
 
+        initSearchView()
+
+        initPullToRefresh()
+        allInited = true
+        updateSearch()
+
+        MainActivity.detailsFilmIntent?.let { title ->
+            scope.launch {
+                viewModel.interactor.getFilmByTitle(title)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { film ->
+                        MainActivity.instance.launchDetailsFragment(film)
+                    }
+            }
+        }
+    }
+
+    private fun initSearchView() {
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 lastSearch = query
@@ -142,10 +167,6 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
         binding.searchView.setOnClickListener {
             binding.searchView.isIconified = false
         }
-
-        initPullToRefresh()
-        allInited = true
-        updateSearch()
     }
 
     private fun updateSearch() {
@@ -153,10 +174,10 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
         if (onlyFavorites) {
             viewModel.interactor.dbase.lastLoadedFavorites?.map { it.toFilmData() }
                 ?.let {
-                    filmSearch.search(it, adapter, onlyFavorites,lastSearch)
+                    filmSearch.search(it, adapter, onlyFavorites, lastSearch)
                 }
         } else {
-            filmSearch.search(filmsDataBase, adapter, onlyFavorites,lastSearch)
+            filmSearch.search(filmsDataBase, adapter, onlyFavorites, lastSearch)
             if (adapter.data.size < 20 && lastSearch.isNullOrBlank()) {
                 viewModel.loadNewFilmList()
             } else if (!lastSearch.isNullOrBlank()) {

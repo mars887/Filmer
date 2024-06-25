@@ -10,14 +10,13 @@ import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import javax.inject.Inject
 
-class TVFragmentViewModel : ViewModel() {
+class TVFragmentViewModel : DisposableViewModel() {
 
-    var filmListData: Observable<List<com.example.sql_module.FilmData>>
+    var filmListData: Observable<List<FilmData>>
 
     @Inject
     lateinit var interactor: Interact
     val showProgressBar: BehaviorSubject<Boolean>
-    val autoDisposable = CompositeDisposable()
 
     init {
         App.instance.appComponent.inject(this)
@@ -41,14 +40,4 @@ class TVFragmentViewModel : ViewModel() {
         println("searching")
         interactor.searchNewFilms(query,onReload)
     }
-
-    override fun onCleared() {
-        super.onCleared()
-        autoDisposable.dispose()
-    }
-
-}
-
-fun Disposable.bindTo(tvvmodel: TVFragmentViewModel) {
-    tvvmodel.autoDisposable.add(this)
 }

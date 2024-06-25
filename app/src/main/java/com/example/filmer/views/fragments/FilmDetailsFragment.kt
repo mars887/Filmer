@@ -1,6 +1,9 @@
 package com.example.filmer.views.fragments
 
 import android.Manifest
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
+import android.app.TimePickerDialog.OnTimeSetListener
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -16,31 +19,37 @@ import android.widget.PopupMenu
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.get
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.example.filmer.App
 import com.example.filmer.R
+import com.example.filmer.alarms.AlarmController
 import com.example.filmer.data.db.SQLInteractor
 import com.example.filmer.databinding.FragmentFilmDetailsBinding
 import com.example.filmer.viewmodel.FilmDetailsViewModel
+import com.example.sql_module.FilmData
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 import javax.inject.Inject
+
 
 class FilmDetailsFragment : Fragment() {
     private lateinit var binding: FragmentFilmDetailsBinding
     private val viewModel: FilmDetailsViewModel by viewModels()
-    private lateinit var film: com.example.sql_module.FilmData
+    private lateinit var film: FilmData
     private val scope = CoroutineScope(Dispatchers.IO)
-    @Inject lateinit var sqlInteractor: SQLInteractor
+
+    @Inject
+    lateinit var sqlInteractor: SQLInteractor
+
+    @Inject
+    lateinit var alarmController: AlarmController
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,7 +64,7 @@ class FilmDetailsFragment : Fragment() {
 
         App.instance.appComponent.inject(this)
 
-        film = arguments?.get("film") as com.example.sql_module.FilmData
+        film = arguments?.get("film") as FilmData
 
         binding.apply {
 
@@ -75,10 +84,20 @@ class FilmDetailsFragment : Fragment() {
             favoriteFab.translationY = (-fabMargin).toFloat()
             favoriteFab.translationX = (-fabMargin * 2 - fabSize).toFloat()
 
-            favoriteFab.setImageDrawable(AppCompatResources.getDrawable(requireContext(),if (film.isFavorite) R.drawable.baseline_favorite_24 else R.drawable.bottom_bar_favorite_icon))
+            favoriteFab.setImageDrawable(
+                AppCompatResources.getDrawable(
+                    requireContext(),
+                    if (film.isFavorite) R.drawable.baseline_favorite_24 else R.drawable.bottom_bar_favorite_icon
+                )
+            )
             favoriteFab.setOnClickListener {
                 film.isFavorite = !film.isFavorite
-                favoriteFab.setImageDrawable(AppCompatResources.getDrawable(requireContext(),if (film.isFavorite) R.drawable.baseline_favorite_24 else R.drawable.bottom_bar_favorite_icon))
+                favoriteFab.setImageDrawable(
+                    AppCompatResources.getDrawable(
+                        requireContext(),
+                        if (film.isFavorite) R.drawable.baseline_favorite_24 else R.drawable.bottom_bar_favorite_icon
+                    )
+                )
                 if (film.isFavorite) sqlInteractor.addToFavorites(film)
                 else sqlInteractor.removeFromFavorites(film)
             }
@@ -110,7 +129,7 @@ class FilmDetailsFragment : Fragment() {
                 }
 
                 R.id.fdpu_watch_later -> {
-                    App.instance.notificationsHelper.sendWatchLater(film)
+                    applyWatchLater(film)
                     true
                 }
 
@@ -121,6 +140,43 @@ class FilmDetailsFragment : Fragment() {
             popUpMenu.setForceShowIcon(true)
         }
         popUpMenu.show()
+    }
+
+    private fun applyWatchLater(film: FilmData) {
+        val currentTime = LocalDateTime.now()
+        val time = arrayListOf(
+            currentTime.year,
+            currentTime.monthValue,
+            currentTime.dayOfMonth,
+            currentTime.hour,
+            currentTime.minute
+        )
+
+        val datePickerDialog = DatePickerDialog(
+            this.requireContext(), { _, selectedYear, selectedMonth, selectedDay ->
+                time[0] = selectedYear
+                time[1] = selectedMonth
+                time[2] = selectedDay
+
+                val timePickerDialog = TimePickerDialog(
+                    this.requireContext(), { _, selectedHour, selectedMinute ->
+                        time[3] = selectedHour
+                        time[4] = selectedMinute
+
+                        println("creating alarm for fil ${film.title} with time - $time")
+                        val selectedDateTime: LocalDateTime =
+                            LocalDateTime.of(time[0], time[1], time[2], time[3], time[4])
+
+                        alarmController.setupAlarm(selectedDateTime,film)
+
+                    }, time[3], time[4], true
+                )
+
+                timePickerDialog.show()
+            }, time[0], time[1], time[2]
+        )
+
+        datePickerDialog.show()
     }
 
     private fun checkPermission(): Boolean {
@@ -191,7 +247,7 @@ class FilmDetailsFragment : Fragment() {
             return
         }
         val chandler = CoroutineExceptionHandler { coroutineContext, throwable ->
-            Log.e("poster_loader",throwable.message?: "")
+            Log.e("poster_loader", throwable.message ?: "")
             throwable.printStackTrace()
         }
 

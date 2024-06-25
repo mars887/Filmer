@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="160dp"
+    android:clickable="true"
+    android:elevation="10dp"
+    app:cardCornerRadius="20dp">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/alarmInfoContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/imageContainer"
+                android:layout_width="120dp"
+                android:layout_height="match_parent"
+                app:cardCornerRadius="10dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/posterImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop" />
+
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="0dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="5dp"
+                android:textSize="16sp"
+                android:gravity="center|start"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/imageContainer"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/alarmDate"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:textSize="13sp"
+                android:gravity="top"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/imageContainer"
+                app:layout_constraintTop_toBottomOf="@id/title" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/alarmInfoButtonsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="invisible"
+            android:background="@null"
+            android:layout_margin="5dp">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/buttons1"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@null"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@id/alarmInfoButtonsContainer"
+                app:layout_constraintEnd_toStartOf="@id/buttons2"
+                app:layout_constraintStart_toStartOf="@id/alarmInfoButtonsContainer"
+                app:layout_constraintTop_toBottomOf="@id/buttonsText" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/buttons2"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@null"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@id/alarmInfoButtonsContainer"
+                app:layout_constraintEnd_toEndOf="@id/alarmInfoButtonsContainer"
+                app:layout_constraintStart_toEndOf="@id/buttons1"
+                app:layout_constraintTop_toBottomOf="@id/buttonsText" />
+
+            <TextView
+                android:id="@+id/buttonsText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="50dp"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:visibility="invisible"
+                app:layout_constraintStart_toStartOf="@id/alarmInfoButtonsContainer"
+                app:layout_constraintEnd_toEndOf="@id/alarmInfoButtonsContainer"
+                app:layout_constraintTop_toTopOf="@id/alarmInfoButtonsContainer"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </FrameLayout>
+
+</androidx.cardview.widget.CardView>

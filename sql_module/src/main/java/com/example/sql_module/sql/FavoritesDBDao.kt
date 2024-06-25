@@ -5,11 +5,13 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import io.reactivex.rxjava3.core.Observable
 
 @Dao
 interface FavoritesDBDao {
 
+    @Transaction
     @Query("SELECT * FROM favorite_films")
     fun getAllFavorites(): Observable<List<FavoriteFilmData>>
 

@@ -172,7 +172,7 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
     private fun updateSearch() {
         println("sup $lastSearch")
         if (onlyFavorites) {
-            viewModel.interactor.dbase.lastLoadedFavorites?.map { it.toFilmData() }
+            viewModel.interactor.dbase.lastLoadedFavorites?.toList()
                 ?.let {
                     filmSearch.search(it, adapter, onlyFavorites, lastSearch)
                 }

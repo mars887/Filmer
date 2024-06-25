@@ -216,6 +216,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
+        fun checkInstance(): MainActivity? {
+            return if(::instance.isInitialized) instance else null
+        }
+
         var detailsFilmIntent: String? = null
         lateinit var instance: MainActivity
             private set

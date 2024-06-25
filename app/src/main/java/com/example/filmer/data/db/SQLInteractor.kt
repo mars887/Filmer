@@ -1,11 +1,9 @@
 package com.example.filmer.data.db
 
 import com.example.sql_module.FilmData
-import com.example.sql_module.sql.FavoriteFilmData
 import com.example.sql_module.sql.FavoritesDBDao
 import com.example.sql_module.sql.FilmDBDao
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,7 +29,7 @@ class SQLInteractor @Inject constructor(
     fun addToFavorites(filmData: FilmData) {
         scope.launch {
             filmData.isFavorite = true
-            favoritesDBDao.insertFavorite(FavoriteFilmData(filmData))
+            favoritesDBDao.insertFavorite(filmData.toFavorite())
             filmDBDao.insertFilm(filmData)
         }
     }
@@ -39,7 +37,7 @@ class SQLInteractor @Inject constructor(
     fun removeFromFavorites(filmData: FilmData) {
         scope.launch {
             filmData.isFavorite = false
-            favoritesDBDao.deleteFavorite(FavoriteFilmData(filmData))
+            favoritesDBDao.deleteFavorite(filmData.toFavorite())
             filmDBDao.insertFilm(filmData)
         }
     }

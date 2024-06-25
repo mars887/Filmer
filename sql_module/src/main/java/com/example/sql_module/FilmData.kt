@@ -6,19 +6,25 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.example.sql_module.sql.FavoriteFilmData
 
-@Entity(tableName = "cached_films", indices = [Index(value = ["title"], unique = true)])
-data class FilmData (
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+@Entity(tableName = "cached_films")
+data class FilmData(
+    @PrimaryKey val id: Int,
     @ColumnInfo(name = "poster") val poster: String,
     @ColumnInfo(name = "title") val title: String,
     @ColumnInfo(name = "description") val description: String,
-    @ColumnInfo(name = "rating")var rating: Double,
+    @ColumnInfo(name = "rating") var rating: Double,
     @ColumnInfo(name = "isFavorite") var isFavorite: Boolean = false
 ) : Parcelable {
 
+    fun toFavorite() = FavoriteFilmData(
+        id, poster, title, description, rating
+    )
 
-    constructor(parcel: Parcel) : this(0,
+
+    constructor(parcel: Parcel) : this(
+        parcel.readInt(),
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readString()!!,
@@ -27,6 +33,7 @@ data class FilmData (
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeInt(id)
         parcel.writeString(poster)
         parcel.writeString(title)
         parcel.writeString(description)
@@ -49,7 +56,7 @@ data class FilmData (
     }
 
     override fun equals(other: Any?): Boolean {
-        return (other is FilmData && other.title == this.title)
+        return (other is FilmData && other.id == this.id)
     }
 
     override fun toString(): String {
@@ -57,6 +64,6 @@ data class FilmData (
     }
 
     override fun hashCode(): Int {
-        return title.hashCode()
+        return id.hashCode()
     }
 }

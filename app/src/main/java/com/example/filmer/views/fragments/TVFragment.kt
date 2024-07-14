@@ -71,6 +71,7 @@ class TVFragment(onlyFavorites: Boolean = false) : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        //if(!App.instance.interactor.checkTrialState()) onlyFavorites = true
 
         viewModel.filmListData
             .subscribeOn(Schedulers.io())

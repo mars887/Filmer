@@ -94,5 +94,7 @@ class Interact @Inject constructor(
         preferences.saveAppTheme(appTheme)
     }
 
+    fun checkTrialState(): Boolean = preferences.trialState!!
+
     fun getFilmByTitle(title: String): Observable<FilmData> = sqlInteractor.getFilmByTitle(title)
 }

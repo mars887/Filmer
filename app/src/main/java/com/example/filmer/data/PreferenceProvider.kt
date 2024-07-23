@@ -48,13 +48,12 @@ class PreferenceProvider @Inject constructor(context: Context) {
     var trialState: Boolean? = null
         private set
         get() {
-            if(System.currentTimeMillis() - (trialCacheTime ?: 0) > 500 || field == null) {
+            if (System.currentTimeMillis() - (trialCacheTime ?: 0) > 500 || field == null) {
                 field = checkTrialState()
                 trialCacheTime = System.currentTimeMillis()
             }
             return field!!
         }
-
 
 
     private fun checkTrialState(): Boolean {
@@ -71,17 +70,44 @@ class PreferenceProvider @Inject constructor(context: Context) {
         }
     }
 
+
+    fun saveStartPosterData(
+        filmId: Long,
+        viewCount: Long,
+        startViewCount: Long,
+        percentage: Float
+    ) {
+        preferences.edit().apply {
+            putLong(filmStartPosterID, filmId)
+            putLong(filmStartPosterCount, viewCount)
+            putLong(filmStartPosterStartCount, startViewCount)
+            putFloat(filmStartPosterPercentage, percentage)
+            apply()
+        }
+    }
+
+    fun getStartPosterID(): Long = preferences.getLong(filmStartPosterID, -1)
+    fun getStartPosterCount(): Long = preferences.getLong(filmStartPosterCount, 0)
+    fun getStartPosterPercentage(): Float = preferences.getFloat(filmStartPosterPercentage, 0f)
+    fun getStartPosterStartCount(): Long = preferences.getLong(filmStartPosterStartCount, 0)
+
     companion object {
         private const val KEY_FIRST_LAUNCH = "first_launch"
         private const val KEY_DEFAULT_CATEGORY = "default_category"
         private const val DEFAULT_CATEGORY = "popular"
 
         private const val APP_THEME_KEY = "app_theme_key"
-        public const val APP_THEME_LIGHT = "app_theme_light"
-        public const val APP_THEME_DARK = "app_theme_dark"
+        const val APP_THEME_LIGHT = "app_theme_light"
+        const val APP_THEME_DARK = "app_theme_dark"
 
 
         const val trialDuration = 1000 * 60 * 60 * 24 * 7  // 7 days
         const val trialStartKey = "trial_start_key"
+
+
+        const val filmStartPosterID = "filmStartPosterId"
+        const val filmStartPosterCount = "filmStartPosterCount"
+        const val filmStartPosterStartCount = "filmStartPosterStartCount"
+        const val filmStartPosterPercentage = "filmStartPosterPercentage"
     }
 }

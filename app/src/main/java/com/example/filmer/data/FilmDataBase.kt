@@ -1,9 +1,16 @@
 package com.example.filmer.data
 
 import com.example.filmer.data.db.SQLInteractor
+import com.example.filmer.domain.Interact
 import com.example.sql_module.FilmData
 import com.example.sql_module.sql.FavoriteFilmData
 import io.reactivex.rxjava3.core.Observable
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.internal.ChannelFlow
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.util.concurrent.Executors
 import javax.inject.Inject
 
@@ -54,6 +61,22 @@ class FilmDataBase @Inject constructor(
                 }
                 list
             }
+
+    override fun getFilmById(id: Long) = channelFlow<FilmData?> {
+        val mutex = Mutex(true)
+        val disposable = getFilmDB().subscribe {
+            val find = it.find {
+                it.id == id.toInt()
+            }
+            runBlocking {
+                send(find)
+                mutex.unlock()
+            }
+        }
+        mutex.withLock {
+            disposable.dispose()
+        }
+    }
 
 
     override fun addFilms(films: List<FilmData>) {

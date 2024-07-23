@@ -42,5 +42,11 @@ class SQLInteractor @Inject constructor(
         }
     }
 
+    fun addOneFilm(filmData: FilmData) {
+        scope.launch {
+            filmDBDao.insertFilm(filmData)
+        }
+    }
+
     fun getFilmByTitle(title: String) = filmDBDao.getFilmByTitle(title)
 }

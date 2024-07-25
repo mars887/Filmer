@@ -22,4 +22,11 @@ interface FilmApi {
         @Query("query") query: String,
         @Query("page") page: Int
     ): Observable<ApiQResult>
+
+    @GET("movie/{movieId}")
+    fun getFilmById(
+        @Path("movieId") movieId: String,
+        @Query("api_key") apiKey: String,
+        @Query("language") language: String
+    ): Observable<ApiMovieResult>
 }

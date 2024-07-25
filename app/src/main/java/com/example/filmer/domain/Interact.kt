@@ -6,9 +6,13 @@ import com.example.filmer.data.PreferenceProvider
 import com.example.filmer.data.apiUtils.ResultToFilmsConverter
 import com.example.filmer.data.db.SQLInteractor
 import com.example.remote_module.FilmApi
+import com.example.remote_module.entity.FilmApiKey
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 class Interact @Inject constructor(
@@ -30,7 +34,7 @@ class Interact @Inject constructor(
 
 
         val disposable = filmApi.getFilmsSearch(
-            com.example.remote_module.entity.FilmApiKey.FILM_API_KEY,
+            FilmApiKey.FILM_API_KEY,
             "ru",
             query.lowercase(),
             dbase.getLastLoadedPage("querry_$query")
@@ -59,7 +63,7 @@ class Interact @Inject constructor(
 
         val disposable = filmApi.getFilms(
             currCategory,
-            com.example.remote_module.entity.FilmApiKey.FILM_API_KEY,
+            FilmApiKey.FILM_API_KEY,
             "ru",
             dbase.getLastLoadedPage(currCategory)
         ).map {
@@ -79,6 +83,39 @@ class Interact @Inject constructor(
             }, {
                 progressBarState.onNext(false)
             })
+    }
+
+    suspend fun getFilmById(filmId: Long): Flow<FilmData> {
+        val flow = MutableSharedFlow<FilmData>(replay = 1)
+        dbase.getFilmById(filmId).collect {
+            if (it != null) {
+                flow.emit(it)
+            } else {
+                loadFilmById(filmId).collect {
+                    flow.emit(it)
+                }
+            }
+        }
+        return flow
+    }
+
+    suspend fun loadFilmById(filmId: Long): Flow<FilmData> {
+        val flow = MutableSharedFlow<FilmData>(replay = 1)
+        val disposable = filmApi.getFilmById(
+            filmId.toString(),
+            FilmApiKey.FILM_API_KEY,
+            "ru"
+        ).map {
+            ResultToFilmsConverter.convertMovieResultToFilmData(it)
+        }.subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.io())
+            .subscribe {
+                sqlInteractor.addOneFilm(it)
+                runBlocking {
+                    flow.emit(it)
+                }
+            }
+        return flow
     }
 
     fun getDefCategoryFP() = preferences.getDefaultCategory()

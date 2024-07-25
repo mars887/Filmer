@@ -1,5 +1,6 @@
 package com.example.filmer.data.apiUtils
 
+import com.example.remote_module.ApiMovieResult
 import com.example.sql_module.FilmData
 
 object ResultToFilmsConverter {
@@ -20,4 +21,13 @@ object ResultToFilmsConverter {
         }
         return result
     }
+
+    fun convertMovieResultToFilmData(result: ApiMovieResult): FilmData = FilmData(
+        result.id,
+        result.posterPath,
+        result.title,
+        result.overview,
+        result.voteAverage,
+        isFavorite = false
+    )
 }

@@ -10,7 +10,9 @@ import com.example.filmer.notifications.NotificationHelper
 import com.example.filmer.viewmodel.SettingsFragmentViewModel
 import com.example.filmer.viewmodel.TVFragmentViewModel
 import com.example.filmer.viewmodel.WatchLaterViewModel
+import com.example.filmer.views.MainActivity
 import com.example.filmer.views.fragments.FilmDetailsFragment
+import com.example.filmer.views.fragments.ReklamaFragment
 import com.example.filmer.views.fragments.TVFragment
 import com.example.filmer.views.fragments.WatchLaterFragment
 import com.example.filmer.views.rvadapters.AlarmsListRVAdapter
@@ -45,4 +47,6 @@ interface AppComponent {
     fun inject(alarmsListRVAdapter: AlarmsListRVAdapter)
     fun inject(watchLaterFragment: WatchLaterFragment)
     fun inject(watchLaterViewModel: WatchLaterViewModel)
+    fun inject(reklamaFragment: ReklamaFragment)
+    fun inject(mainActivity: MainActivity)
 }

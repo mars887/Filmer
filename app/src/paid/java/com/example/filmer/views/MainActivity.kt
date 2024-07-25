@@ -3,22 +3,30 @@ package com.example.filmer.views
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import com.example.filmer.App
 import com.example.filmer.R
 import com.example.filmer.databinding.ActivityMainBinding
+import com.example.filmer.domain.Interact
 import com.example.filmer.isDarkThemeOn
 import com.example.filmer.services.PowerStatusBroadcast
+import com.example.filmer.usecases.CheckPosterStateUseCase
 import com.example.filmer.views.fragments.FilmDetailsFragment
+import com.example.filmer.views.fragments.ReklamaFragment
 import com.example.filmer.views.fragments.SelectionsFragment
 import com.example.filmer.views.fragments.SettingsFragment
 import com.example.filmer.views.fragments.TVFragment
 import com.example.filmer.views.fragments.WatchLaterFragment
 import com.example.sql_module.FilmData
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -27,13 +35,22 @@ class MainActivity : AppCompatActivity() {
     private var darkBeenEnabled = false
     private lateinit var pwBroadcast: PowerStatusBroadcast
 
+    @Inject
+    lateinit var checkPosterStateUseCase: CheckPosterStateUseCase
+
+    @Inject
+    lateinit var interact: Interact
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         instance = this
 
+        App.instance.appComponent.inject(this)
         detailsFilmIntent = intent.getStringExtra("showDetailsTitle")
+
+        startPosterCheck()
 
         initPowerBroadcast()
 
@@ -66,8 +83,23 @@ class MainActivity : AppCompatActivity() {
         })
 
         binding.bottomNavigation.selectedItemId = R.id.bottomMenu_tv
+    }
 
+    private fun startPosterCheck() {
+        val result = checkPosterStateUseCase()
 
+        lifecycleScope.launch {
+            result.collect {
+                Log.d("TAG", it.toString())
+                if (it != null) {
+                    interact.getFilmById(it).collect { film ->
+                        if (film == null) return@collect
+                        val fragment = ReklamaFragment(film)
+                        changeFragment(fragment, "reklama")
+                    }
+                }
+            }
+        }
     }
 
     private fun initPowerBroadcast() {
@@ -210,6 +242,11 @@ class MainActivity : AppCompatActivity() {
             .commit()
     }
 
+    fun closeCurrentFragment() {
+        supportFragmentManager.popBackStack()
+    }
+
+
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(pwBroadcast)
@@ -217,7 +254,7 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         fun checkInstance(): MainActivity? {
-            return if(::instance.isInitialized) instance else null
+            return if (::instance.isInitialized) instance else null
         }
 
         var detailsFilmIntent: String? = null
